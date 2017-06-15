@@ -1,8 +1,8 @@
 {
-  "name": "enum-x",
+  "name": "enumify-x",
   "version": "1.0.0",
   "description": "Enum module.",
-  "homepage": "https://github.com/Xotic750/enum-x",
+  "homepage": "https://github.com/Xotic750/enumify-x",
   "author": {
     "name": "Graham Fairweather",
     "email": "xotic750@gmail.com"
@@ -22,26 +22,27 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Xotic750/enum-x.git"
+    "url": "https://github.com/Xotic750/enumify-x.git"
   },
   "bugs": {
-    "url": "https://github.com/Xotic750/enum-x/issues"
+    "url": "https://github.com/Xotic750/enumify-x/issues"
   },
   "dependencies": {
     "array-slice-x": "^1.0.1",
+    "array.prototype.some": "^1.0.0",
     "assert-is-function-x": "^1.2.0",
     "assert-is-object-x": "^1.1.1",
-    "for-each": "^0.3.2",
+    "collections-x": "^1.3.1",
+    "has-own-property-x": "^1.2.0",
     "has-symbol-support-x": "^1.2.0",
     "is-array": "^1.0.1",
+    "is-function-x": "^1.2.0",
     "is-object-like-x": "^1.2.0",
     "is-safe-integer": "^1.0.2",
     "is-string": "^1.0.4",
     "object-create-x": "^1.0.0",
     "object-define-properties-x": "^1.0.0",
-    "object-define-property-x": "^1.0.0",
-    "object-keys": "^1.0.11",
-    "string-quote-x": "^1.0.0"
+    "object-define-property-x": "^1.0.0"
   },
   "devDependencies": {
     "@xotic750/eslint-config-standard-x": "^1.0.3",
@@ -84,8 +85,8 @@
     "lint": "eslint *.js tests/spec/*.js",
     "security": "nsp check",
     "test": "jasmine-node --matchall tests/spec/",
-    "browserify": "browserify -p browserify-derequire -e index.js -o lib/enum-x.js -u 'crypto' -s returnExports",
-    "uglify": "uglifyjs lib/enum-x.js -o lib/enum-x.min.js --support-ie8 --compress --keep-fnames --mangle --beautify ascii_only=true,beautify=false --source-map filename=lib/enum-x.map",
+    "browserify": "browserify -p browserify-derequire -e index.js -o lib/enumify-x.js -u 'crypto' -s returnExports",
+    "uglify": "uglifyjs lib/enumify-x.js -o lib/enumify-x.min.js --support-ie8 --compress --keep-fnames --mangle --beautify ascii_only=true,beautify=false --source-map filename=lib/enumify-x.map",
     "precommit": "npm run build:all",
     "prepush": "npm run build:all"
   }

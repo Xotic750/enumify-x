@@ -21,6 +21,19 @@ if (typeof module === 'object' && module.exports) {
   Enum = returnExports;
 }
 
+var hasSymbolSupport = typeof Symbol === 'function' && typeof Symbol('') === 'symbol';
+var hasIteratorSupport;
+if (hasSymbolSupport) {
+  try {
+    // eslint-disable-next-line no-eval
+    eval('for (var x of [true]) { hasIteratorSupport = x; }');
+  } catch (ignore) {
+    hasIteratorSupport = null;
+  }
+}
+
+var itHasSymbolIterator = hasIteratorSupport ? it : xit;
+
 describe('Enum', function () {
   var subject;
 
@@ -30,21 +43,72 @@ describe('Enum', function () {
       'YELLOW',
       {
         name: 'BLUE',
-        ordinal: 10
+        value: 10
       },
       'PINK',
       {
         name: 'BLACK',
-        ordinal: 1
+        value: 1
+      },
+      {
+        name: 'GREY',
+        value: Object
       }
     ]);
   });
 
-  /*
-  it('subject is an instance of Enum', function () {
-    expect(subject instanceof Enum).toBe(true);
+  it('subject is a function', function () {
+    expect(typeof subject).toBe('function');
   });
-  */
+
+  it('subject can not be instantiated', function () {
+    expect(function () {
+      // eslint-disable-next-line no-new
+      new subject(); // eslint-disable-line new-cap
+    }).toThrow();
+  });
+
+  it('should throw if duplicate name used', function () {
+    expect(function () {
+      Enum.create('names', [
+        'RED',
+        'YELLOW',
+        {
+          name: 'BLUE',
+          value: 10
+        },
+        'PINK',
+        {
+          name: 'BLACK',
+          value: 1
+        },
+        {
+          name: 'RED',
+          value: 1
+        }
+      ]);
+    }).toThrow();
+  });
+
+  it('should throw if name is not a string', function () {
+    expect(function () {
+      Enum.create('values', [Object]);
+    }).toThrow();
+  });
+
+  it('should throw if duplicate value used', function () {
+    expect(function () {
+      Enum.create('values', subject, true);
+    }).toThrow();
+  });
+
+  it('subject.prototype is an instance of Enum', function () {
+    expect(subject.prototype instanceof Enum).toBe(true);
+  });
+
+  it('subject.name is as supplied', function () {
+    expect(subject.name).toBe('subject');
+  });
 
   it('property should be an instance of Enum', function () {
     expect(subject.RED instanceof Enum).toBe(true);
@@ -54,63 +118,102 @@ describe('Enum', function () {
     expect(subject.RED instanceof subject).toBe(true);
   });
 
-  it('subject should have correct Contants with names', function () {
+  it('toString should give the correct value', function () {
+    expect(String(subject.RED)).toBe('subject.RED');
+  });
+
+  it('subject should have correct Constants with names', function () {
     expect(subject.RED.name).toBe('RED');
     expect(subject.YELLOW.name).toBe('YELLOW');
     expect(subject.BLUE.name).toBe('BLUE');
     expect(subject.PINK.name).toBe('PINK');
-    expect(subject.BLACK.name).toBe('BLACK');
+    expect(subject.BLACK.name).toBe('YELLOW');
+    expect(subject.GREY.name).toBe('GREY');
   });
 
-  it('subject should have correct Contants with ordinals', function () {
-    expect(subject.RED.ordinal).toBe(0);
-    expect(subject.YELLOW.ordinal).toBe(1);
-    expect(subject.BLUE.ordinal).toBe(10);
-    expect(subject.PINK.ordinal).toBe(11);
-    expect(subject.BLACK.ordinal).toBe(1);
+  it('subject should have correct Constants with values', function () {
+    expect(subject.RED.value).toBe(0);
+    expect(subject.YELLOW.value).toBe(1);
+    expect(subject.BLUE.value).toBe(10);
+    expect(subject.PINK.value).toBe(11);
+    expect(subject.BLACK.value).toBe(1);
+    expect(subject.GREY.value).toBe(Object);
   });
 
-  it('subject should have working enumerate', function () {
-    var names = ['RED', 'YELLOW', 'BLUE', 'PINK', 'BLACK'];
-    var ordinals = [0, 1, 10, 11, 1];
+  it('subject should have working iterate', function () {
+    var names = ['RED', 'YELLOW', 'BLUE', 'PINK', 'YELLOW', 'GREY'];
+    var keys = ['RED', 'YELLOW', 'BLUE', 'PINK', 'BLACK', 'GREY'];
+    var values = [0, 1, 10, 11, 1, Object];
     var index = 0;
-    subject.enumerate(function (Constant, key, obj) {
+    subject.iterate(function (Constant, key, obj) {
       expect(obj).toBe(subject);
       expect(Constant.name).toBe(names[index]);
-      expect(Constant.ordinal).toBe(ordinals[index]);
+      expect(key).toBe(keys[index]);
+      expect(Constant.value).toBe(values[index]);
       index += 1;
     });
   });
 
-  it('subject should have working find for unique ordinals', function () {
+  it('subject should have working find for unique values', function () {
     var one = subject(0);
     expect(one instanceof Enum).toBe(true);
     expect(one instanceof subject).toBe(true);
-    expect(typeof subject(20)).toBe('undefined');
   });
 
-  it('subject should have working find for repeated ordinals', function () {
-    var found = subject(1);
-    expect(Array.isArray(found)).toBe(true);
-    expect(found.length).toBe(2);
-    expect(found[0].ordinal).toBe(1);
-    expect(found[1].ordinal).toBe(1);
+  it('subject should have working find for repeated values', function () {
+    var one = subject(1);
+    expect(one instanceof Enum).toBe(true);
+    expect(one instanceof subject).toBe(true);
+  });
+
+  it('subject should have working find for non-existent values', function () {
+    var one = subject(20);
+    expect(typeof one).toBe('undefined');
   });
 
   it('Constant found should equal Constant specified', function () {
-    expect(subject(10)).toBe(subject.BLUE);
+    var one = subject(10);
+    expect(one).toBe(subject.BLUE);
   });
 
   it('subject should serialise as JSON', function () {
-    var expected = '{"RED":{"name":"RED","ordinal":0},"YELLOW":{"name":"YELLOW","ordinal":1},"BLUE":{"name":"BLUE","ordinal":10},"PINK":{"name":"PINK","ordinal":11},"BLACK":{"name":"BLACK","ordinal":1}}';
+    var expected = '{"RED":{"name":"RED","value":0},"YELLOW":{"name":"YELLOW","value":1},"BLUE":{"name":"BLUE","value":10},"PINK":{"name":"PINK","value":11},"BLACK":{"name":"YELLOW","value":1},"GREY":{"name":"GREY"}}';
     expect(JSON.stringify(subject)).toBe(expected);
   });
 
   it('subject should be cloneable and not be the same object', function () {
     var clone = Enum.create('clone', subject);
     expect(clone).not.toBe(subject);
-    var expected = '{"RED":{"name":"RED","ordinal":0},"YELLOW":{"name":"YELLOW","ordinal":1},"BLUE":{"name":"BLUE","ordinal":10},"PINK":{"name":"PINK","ordinal":11},"BLACK":{"name":"BLACK","ordinal":1}}';
+    var expected = '{"RED":{"name":"RED","value":0},"YELLOW":{"name":"YELLOW","value":1},"BLUE":{"name":"BLUE","value":10},"PINK":{"name":"PINK","value":11},"BLACK":{"name":"YELLOW","value":1},"GREY":{"name":"GREY"}}';
     expect(JSON.stringify(clone)).toBe(expected);
+    expect(clone.name).toBe('clone');
+  });
+
+  it('Actuals should not return actuals', function () {
+    expect(subject.YELLOW).toBe(subject.YELLOW);
+  });
+
+  it('Aliases should return actuals', function () {
+    expect(subject.BLACK).toBe(subject.YELLOW);
+  });
+
+  itHasSymbolIterator('subject has Symbol.iterator', function () {
+    var names = ['RED', 'YELLOW', 'BLUE', 'PINK', 'YELLOW', 'GREY'];
+    var keys = ['RED', 'YELLOW', 'BLUE', 'PINK', 'BLACK', 'GREY'];
+    var values = [0, 1, 10, 11, 1, Object];
+    var index = 0;
+    // eslint-disable-next-line no-unused-vars
+    var fn = function (entry) {
+      var key = entry[0];
+      var Constant = entry[1];
+      expect(Constant.name).toBe(names[index]);
+      expect(key).toBe(keys[index]);
+      expect(Constant.value).toBe(values[index]);
+      index += 1;
+    };
+
+    // eslint-disable-next-line no-eval
+    eval('for (var entry of subject) { fn(entry); }');
   });
 
 });
