@@ -26,6 +26,8 @@ var hasFunctionNames = t.name === 'test1';
 var itHasFunctionNames = hasFunctionNames ? it : xit;
 
 var hasSymbolSupport = typeof Symbol === 'function' && typeof Symbol('') === 'symbol';
+var itHasSymbolSupport = hasSymbolSupport ? it : xit;
+
 var hasIteratorSupport;
 if (hasSymbolSupport) {
   try {
@@ -123,6 +125,32 @@ describe('Enum', function () {
     }).toThrow();
   });
 
+  it('should throw if name is reserved', function () {
+    expect(function () {
+      Enum.create('values', ['call']);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('values', ['hasOwnProperty']);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('values', ['iterate']);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('values', ['toJSON']);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('values', ['toString']);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('values', ['valueOf']);
+    }).toThrow();
+  });
+
   it('should throw if duplicate value used', function () {
     expect(function () {
       Enum.create('values', subject, true);
@@ -131,6 +159,50 @@ describe('Enum', function () {
 
   it('subject.prototype is an instance of Enum', function () {
     expect(subject.prototype instanceof Enum).toBe(true);
+  });
+
+  it('should throw on invalid typeName', function () {
+    expect(function () {
+      Enum.create('', subject);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('123', subject);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create({}, subject);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create([], subject);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('null', subject);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('undefined', subject);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('var', subject);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('var', subject);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('const', subject);
+    }).toThrow();
+  });
+
+  itHasSymbolSupport('should throw on invalid typeName', function () {
+    expect(function () {
+      Enum.create(Symbol(''), subject);
+    }).toThrow();
   });
 
   itHasFunctionNames('subject.name is as supplied', function () {

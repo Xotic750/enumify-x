@@ -26,7 +26,7 @@
  *
  * Requires ES3 or above.
  *
- * @version 1.0.1
+ * @version 1.0.2
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -47,7 +47,9 @@ var isFunction = require('is-function-x');
 var isString = require('is-string');
 var isArray = require('is-array');
 var isSafeInteger = require('is-safe-integer');
+var isValidVarName = require('is-var-name');
 var getFunctionName = require('get-function-name-x');
+var safeToString = require('safe-to-string-x');
 var some = require('array.prototype.some');
 // eslint-disable-next-line no-unused-vars
 var slice = require('array-slice-x');
@@ -94,9 +96,12 @@ defineProperties($Enum.prototype, {
   }
 });
 
-var isReservedName = create(null);
-isReservedName.iterate = true;
-isReservedName.toJSON = true;
+var reservedNames = function _reservedNames() {
+  throw new Error('Not for use');
+};
+
+reservedNames.iterate = true;
+reservedNames.toJSON = true;
 
 var init = function _init(CstmCtr, names, unique) {
   var dKeys = [];
@@ -130,8 +135,8 @@ var init = function _init(CstmCtr, names, unique) {
     }
 
     var name = ident.name;
-    if (isReservedName[name]) {
-      throw new SyntaxError('name is reserved: ' + name);
+    if (name in reservedNames) {
+      throw new SyntaxError('Name is reserved: ' + name);
     }
 
     if (hasOwn(dNames, name)) {
@@ -172,7 +177,12 @@ var init = function _init(CstmCtr, names, unique) {
 
 defineProperties($Enum, {
   create: {
-    value: function _create(ctrName, names, unique) {
+    value: function _create(typeName, names, unique) {
+      var ctrName = safeToString(typeName);
+      if (ctrName === 'undefined' || isValidVarName(ctrName) === false) {
+        throw new Error('Invalid enum name: ' + ctrName);
+      }
+
       var CstmCtr;
       var data;
       var keys;
@@ -269,7 +279,7 @@ defineProperties($Enum, {
  * values. Within an enumeration, the members can be compared by identity, and
  * the enumeration itself can be iterated over.
  *
- * @param {string} ctrName The name of the enum collection.
+ * @param {string} typeName The name of the enum collection.
  * @param {Array.<string|Object>} names An array of valid initiators.
  * @param {Boolean} [unique] Ensure unique enumeration values.
  * @return {Function} The enum collection.

@@ -27,7 +27,7 @@ Enum module.
 
 Requires ES3 or above.
 
-**Version**: 1.0.1  
+**Version**: 1.0.2  
 **Author**: Xotic750 <Xotic750@gmail.com>  
 **License**: [MIT](&lt;https://opensource.org/licenses/MIT&gt;)  
 **Copyright**: Xotic750  
@@ -43,7 +43,7 @@ the enumeration itself can be iterated over.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ctrName | <code>string</code> | The name of the enum collection. |
+| typeName | <code>string</code> | The name of the enum collection. |
 | names | <code>Array.&lt;(string\|Object)&gt;</code> | An array of valid initiators. |
 | [unique] | <code>Boolean</code> | Ensure unique enumeration values. |
 
