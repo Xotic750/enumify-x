@@ -26,7 +26,7 @@
  *
  * Requires ES3 or above.
  *
- * @version 1.0.2
+ * @version 1.0.3
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -44,10 +44,10 @@ var assertIsObject = require('assert-is-object-x');
 var quote = require('string-quote-x');
 var isObjectLike = require('is-object-like-x');
 var isFunction = require('is-function-x');
-var isString = require('is-string');
-var isArray = require('is-array');
+var isArrayLike = require('is-array-like-x');
 var isSafeInteger = require('is-safe-integer');
 var isValidVarName = require('is-var-name');
+var isUndefined = require('validate.io-undefined');
 var getFunctionName = require('get-function-name-x');
 var safeToString = require('safe-to-string-x');
 var some = require('array.prototype.some');
@@ -57,18 +57,24 @@ var collections = require('collections-x');
 var freeze = Object.freeze || function _freeze(object) {
   return assertIsObject(object);
 };
-var $Enum;
 
-$Enum = function Enum(name, value) {
+var reserved = new collections.Set();
+reserved.add('iterate');
+reserved.add('toJSON');
+reserved.add('toString');
+reserved.add('valueOf');
+
+var $Enum = function Enum(name, value) {
   if (arguments.length > 0) {
-    if (isString(name) === false) {
-      throw new TypeError('name is not a string: ' + name);
+    var strName = safeToString(name);
+    if (reserved.has(reserved)) {
+      throw new SyntaxError('Name is reserved: ' + strName);
     }
 
     defineProperties(this, {
       name: {
         enumerable: true,
-        value: name.toString()
+        value: strName
       },
       value: {
         enumerable: true,
@@ -83,10 +89,10 @@ $Enum = function Enum(name, value) {
 defineProperties($Enum.prototype, {
   toJSON: {
     value: function _toJSON() {
-      var obj = create(null);
-      obj.name = this.name;
-      obj.value = this.value;
-      return obj;
+      return {
+        name: this.name,
+        value: this.value
+      };
     }
   },
   toString: {
@@ -96,20 +102,13 @@ defineProperties($Enum.prototype, {
   }
 });
 
-var reservedNames = function _reservedNames() {
-  throw new Error('Not for use');
-};
-
-reservedNames.iterate = true;
-reservedNames.toJSON = true;
-
 var init = function _init(CstmCtr, names, unique) {
   var dKeys = [];
-  var dNames = create(null);
+  var dNames = {};
   var dValues = new collections.Map();
   var isClone;
   var items;
-  if (isArray(names)) {
+  if (isArrayLike(names)) {
     items = names;
   } else if (isFunction(names) && names.prototype instanceof $Enum) {
     isClone = true;
@@ -135,10 +134,6 @@ var init = function _init(CstmCtr, names, unique) {
     }
 
     var name = ident.name;
-    if (name in reservedNames) {
-      throw new SyntaxError('Name is reserved: ' + name);
-    }
-
     if (hasOwn(dNames, name)) {
       throw new TypeError('Attempted to reuse name: ' + name);
     }
@@ -175,6 +170,16 @@ var init = function _init(CstmCtr, names, unique) {
   };
 };
 
+var calcString = function _calcString(ctrName, keys) {
+  var strArr = [];
+  // map
+  some(keys, function _reducer(key) {
+    strArr.push(quote(key));
+  });
+
+  return ctrName + ' { ' + strArr.join(', ') + ' }';
+};
+
 defineProperties($Enum, {
   create: {
     value: function _create(typeName, names, unique) {
@@ -188,10 +193,11 @@ defineProperties($Enum, {
       var keys;
       var values;
       var initiated = false;
+      var asString;
       // eslint-disable-next-line no-unused-vars
       var eFn = function _eFn(context, args) {
         if (initiated) {
-          if (context instanceof CstmCtr) {
+          if (isObjectLike(context) && context instanceof CstmCtr) {
             throw new SyntaxError('Enum classes can’t be instantiated');
           }
 
@@ -202,9 +208,8 @@ defineProperties($Enum, {
         return context;
       };
 
-      var body = ' (value){return eFn(this,slice(arguments))})';
       // eslint-disable-next-line no-eval
-      CstmCtr = eval('(0,function ' + ctrName + body);
+      CstmCtr = eval('(0,function ' + ctrName + ' (value){return eFn(this,slice(arguments))})');
 
       defineProperties(CstmCtr, {
         iterate: {
@@ -217,7 +222,7 @@ defineProperties($Enum, {
 
         toJSON: {
           value: function _toJSON() {
-            var value = create(null);
+            var value = {};
             // forEach
             some(keys, function _reducer(key) {
               value[key] = CstmCtr[key].toJSON();
@@ -229,13 +234,11 @@ defineProperties($Enum, {
 
         toString: {
           value: function _toString() {
-            var strArr = [];
-            // map
-            some(keys, function _reducer(key) {
-              strArr.push(quote(key));
-            });
+            if (isUndefined(asString)) {
+              asString = calcString(ctrName, keys);
+            }
 
-            return ctrName + ' { ' + strArr.join(', ') + ' }';
+            return asString;
           }
         }
       });

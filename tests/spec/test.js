@@ -119,20 +119,22 @@ describe('Enum', function () {
     }).toThrow();
   });
 
-  it('should throw if name is not a string', function () {
+  it('should not throw if name is not a string', function () {
     expect(function () {
       Enum.create('values', [Object]);
-    }).toThrow();
+    }).not.toThrow();
+  });
+
+  itHasSymbolSupport('should not throw if name is not a string', function () {
+    expect(function () {
+      Enum.create('values', [Symbol('')]);
+    }).not.toThrow();
   });
 
   it('should throw if name is reserved', function () {
-    expect(function () {
-      Enum.create('values', ['call']);
-    }).toThrow();
-
-    expect(function () {
-      Enum.create('values', ['hasOwnProperty']);
-    }).toThrow();
+    Enum.create('values', ['call']);
+    Enum.create('values', ['hasOwnProperty']);
+    Enum.create('values', ['apply']);
 
     expect(function () {
       Enum.create('values', ['iterate']);
@@ -148,12 +150,26 @@ describe('Enum', function () {
 
     expect(function () {
       Enum.create('values', ['valueOf']);
-    }).toThrow();
+    }).not.toThrow();
   });
 
   it('should throw if duplicate value used', function () {
     expect(function () {
       Enum.create('values', subject, true);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('values', [
+        { name: 'a', value: NaN },
+        { name: 'b', value: NaN }
+      ], true);
+    }).toThrow();
+
+    expect(function () {
+      Enum.create('values', [
+        { name: 'a', value: 0 },
+        { name: 'b', value: -0 }
+      ], true);
     }).toThrow();
   });
 
