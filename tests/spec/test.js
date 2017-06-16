@@ -21,6 +21,10 @@ if (typeof module === 'object' && module.exports) {
   Enum = returnExports;
 }
 
+var t = function test1() {};
+var hasFunctionNames = t.name === 'test1';
+var itHasFunctionNames = hasFunctionNames ? it : xit;
+
 var hasSymbolSupport = typeof Symbol === 'function' && typeof Symbol('') === 'symbol';
 var hasIteratorSupport;
 if (hasSymbolSupport) {
@@ -129,7 +133,7 @@ describe('Enum', function () {
     expect(subject.prototype instanceof Enum).toBe(true);
   });
 
-  it('subject.name is as supplied', function () {
+  itHasFunctionNames('subject.name is as supplied', function () {
     expect(subject.name).toBe('subject');
   });
 
@@ -209,7 +213,6 @@ describe('Enum', function () {
     expect(clone).not.toBe(subject);
     var expected = '{"RED":{"name":"RED","value":0},"YELLOW":{"name":"YELLOW","value":1},"BLUE":{"name":"BLUE","value":10},"PINK":{"name":"PINK","value":11},"BLACK":{"name":"YELLOW","value":1},"GREY":{"name":"GREY"}}';
     expect(JSON.stringify(clone)).toBe(expected);
-    expect(clone.name).toBe('clone');
   });
 
   it('Actuals should not return actuals', function () {

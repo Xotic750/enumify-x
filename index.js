@@ -47,6 +47,7 @@ var isFunction = require('is-function-x');
 var isString = require('is-string');
 var isArray = require('is-array');
 var isSafeInteger = require('is-safe-integer');
+var getFunctionName = require('get-function-name-x');
 var some = require('array.prototype.some');
 // eslint-disable-next-line no-unused-vars
 var slice = require('array-slice-x');
@@ -88,7 +89,7 @@ defineProperties($Enum.prototype, {
   },
   toString: {
     value: function _toString() {
-      return this.constructor.name + '.' + this.name;
+      return getFunctionName(this.constructor) + '.' + this.name;
     }
   }
 });
