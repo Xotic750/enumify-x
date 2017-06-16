@@ -1,6 +1,6 @@
 {
   "name": "enumify-x",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Enum module.",
   "homepage": "https://github.com/Xotic750/enumify-x",
   "author": {
@@ -42,7 +42,8 @@
     "is-string": "^1.0.4",
     "object-create-x": "^1.0.0",
     "object-define-properties-x": "^1.0.0",
-    "object-define-property-x": "^1.0.0"
+    "object-define-property-x": "^1.0.0",
+    "string-quote-x": "^1.0.0"
   },
   "devDependencies": {
     "@xotic750/eslint-config-standard-x": "^1.0.3",

@@ -26,7 +26,7 @@
  *
  * Requires ES3 or above.
  *
- * @version 1.0.0
+ * @version 1.0.1
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -41,6 +41,7 @@ var hasOwn = require('has-own-property-x');
 var hasSymbolSupport = require('has-symbol-support-x');
 var create = require('object-create-x');
 var assertIsObject = require('assert-is-object-x');
+var quote = require('string-quote-x');
 var isObjectLike = require('is-object-like-x');
 var isFunction = require('is-function-x');
 var isString = require('is-string');
@@ -212,6 +213,18 @@ defineProperties($Enum, {
             });
 
             return value;
+          }
+        },
+
+        toString: {
+          value: function _toString() {
+            var strArr = [];
+            // map
+            some(keys, function _reducer(key) {
+              strArr.push(quote(key));
+            });
+
+            return ctrName + ' { ' + strArr.join(', ') + ' }';
           }
         }
       });

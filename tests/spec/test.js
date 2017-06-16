@@ -28,11 +28,34 @@ if (hasSymbolSupport) {
     // eslint-disable-next-line no-eval
     eval('for (var x of [true]) { hasIteratorSupport = x; }');
   } catch (ignore) {
-    hasIteratorSupport = null;
+    hasIteratorSupport = false;
   }
 }
 
 var itHasSymbolIterator = hasIteratorSupport ? it : xit;
+
+var testRO = Object.defineProperty({}, 'sentinel', {
+  value: 1,
+  writeable: false
+});
+var hasWorkingDP;
+try {
+  testRO.sentinel = 0;
+} catch (ignore) {}
+if (testRO.sentinel === 1) {
+  hasWorkingDP = true;
+}
+var itHasWorkingDP = hasWorkingDP ? it : xit;
+
+var hasWorkingFreeze;
+var testFreeze = Object.freeze({});
+try {
+  testFreeze.sentinel = 0;
+} catch (ignore) {}
+if (testFreeze.sentinel !== 0) {
+  hasWorkingFreeze = true;
+}
+var itHasWorkingFreeze = hasWorkingFreeze ? it : xit;
 
 describe('Enum', function () {
   var subject;
@@ -197,6 +220,10 @@ describe('Enum', function () {
     expect(subject.BLACK).toBe(subject.YELLOW);
   });
 
+  it('subject toString should work', function () {
+    expect(String(subject)).toBe('subject { "RED", "YELLOW", "BLUE", "PINK", "BLACK", "GREY" }');
+  });
+
   itHasSymbolIterator('subject has Symbol.iterator', function () {
     var names = ['RED', 'YELLOW', 'BLUE', 'PINK', 'YELLOW', 'GREY'];
     var keys = ['RED', 'YELLOW', 'BLUE', 'PINK', 'BLACK', 'GREY'];
@@ -216,4 +243,33 @@ describe('Enum', function () {
     eval('for (var entry of subject) { fn(entry); }');
   });
 
+  itHasWorkingDP('subject should not be writeable', function () {
+    expect(function () {
+      try {
+        subject.BLACK = null;
+      } catch (ignore) {}
+    }).not.toThrow();
+
+    expect(subject.BLACK).toBe(subject.YELLOW);
+  });
+
+  itHasWorkingDP('subject.RED.name should not be writeable', function () {
+    expect(function () {
+      try {
+        subject.RED.name = null;
+      } catch (ignore) {}
+    }).not.toThrow();
+
+    expect(subject.RED.name).toBe('RED');
+  });
+
+  itHasWorkingFreeze('subject should not be extendable', function () {
+    expect(function () {
+      try {
+        subject.GREEN = 6;
+      } catch (ignore) {}
+    }).not.toThrow();
+
+    expect(typeof subject.GREEN).toBe('undefined');
+  });
 });
