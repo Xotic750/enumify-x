@@ -119,6 +119,10 @@ describe('Enum', function () {
     }).toThrow();
   });
 
+  it('Enum has symIt', function () {
+    expect(typeof Enum.symIt).toBe(hasIteratorSupport ? 'symbol' : 'string');
+  });
+
   it('should not throw if name is not a string', function () {
     expect(function () {
       Enum.create('values', [Object]);
@@ -137,7 +141,7 @@ describe('Enum', function () {
     Enum.create('values', ['apply']);
 
     expect(function () {
-      Enum.create('values', ['iterate']);
+      Enum.create('values', ['forEach']);
     }).toThrow();
 
     expect(function () {
@@ -255,15 +259,12 @@ describe('Enum', function () {
     expect(subject.GREY.value).toBe(Object);
   });
 
-  it('subject should have working iterate', function () {
-    var names = ['RED', 'YELLOW', 'BLUE', 'PINK', 'YELLOW', 'GREY'];
-    var keys = ['RED', 'YELLOW', 'BLUE', 'PINK', 'BLACK', 'GREY'];
-    var values = [0, 1, 10, 11, 1, Object];
+  it('subject should have working forEach', function () {
+    var names = ['RED', 'YELLOW', 'BLUE', 'PINK', 'GREY'];
+    var values = [0, 1, 10, 11, Object];
     var index = 0;
-    subject.iterate(function (Constant, key, obj) {
-      expect(obj).toBe(subject);
+    subject.forEach(function (Constant) {
       expect(Constant.name).toBe(names[index]);
-      expect(key).toBe(keys[index]);
       expect(Constant.value).toBe(values[index]);
       index += 1;
     });
@@ -292,14 +293,14 @@ describe('Enum', function () {
   });
 
   it('subject should serialise as JSON', function () {
-    var expected = '{"RED":{"name":"RED","value":0},"YELLOW":{"name":"YELLOW","value":1},"BLUE":{"name":"BLUE","value":10},"PINK":{"name":"PINK","value":11},"BLACK":{"name":"YELLOW","value":1},"GREY":{"name":"GREY"}}';
+    var expected = '[{"name":"RED","value":0},{"name":"YELLOW","value":1},{"name":"BLUE","value":10},{"name":"PINK","value":11},{"name":"BLACK","value":1},{"name":"GREY"}]';
     expect(JSON.stringify(subject)).toBe(expected);
   });
 
   it('subject should be cloneable and not be the same object', function () {
     var clone = Enum.create('clone', subject);
     expect(clone).not.toBe(subject);
-    var expected = '{"RED":{"name":"RED","value":0},"YELLOW":{"name":"YELLOW","value":1},"BLUE":{"name":"BLUE","value":10},"PINK":{"name":"PINK","value":11},"BLACK":{"name":"YELLOW","value":1},"GREY":{"name":"GREY"}}';
+    var expected = '[{"name":"RED","value":0},{"name":"YELLOW","value":1},{"name":"BLUE","value":10},{"name":"PINK","value":11},{"name":"BLACK","value":1},{"name":"GREY"}]';
     expect(JSON.stringify(clone)).toBe(expected);
   });
 
@@ -315,23 +316,37 @@ describe('Enum', function () {
     expect(String(subject)).toBe('subject { "RED", "YELLOW", "BLUE", "PINK", "BLACK", "GREY" }');
   });
 
+  it('subject has symIt iterator', function () {
+    var names = ['RED', 'YELLOW', 'BLUE', 'PINK', 'GREY'];
+    var values = [0, 1, 10, 11, Object];
+    var index = 0;
+    var fn = function (Constant) {
+      expect(Constant.name).toBe(names[index]);
+      expect(Constant.value).toBe(values[index]);
+      index += 1;
+    };
+
+    var iter = subject[Enum.symIt]();
+    var next = iter.next();
+    while (next.done === false) {
+      fn(next.value);
+      next = iter.next();
+    }
+  });
+
   itHasSymbolIterator('subject has Symbol.iterator', function () {
-    var names = ['RED', 'YELLOW', 'BLUE', 'PINK', 'YELLOW', 'GREY'];
-    var keys = ['RED', 'YELLOW', 'BLUE', 'PINK', 'BLACK', 'GREY'];
-    var values = [0, 1, 10, 11, 1, Object];
+    var names = ['RED', 'YELLOW', 'BLUE', 'PINK', 'GREY'];
+    var values = [0, 1, 10, 11, Object];
     var index = 0;
     // eslint-disable-next-line no-unused-vars
-    var fn = function (entry) {
-      var key = entry[0];
-      var Constant = entry[1];
+    var fn = function (Constant) {
       expect(Constant.name).toBe(names[index]);
-      expect(key).toBe(keys[index]);
       expect(Constant.value).toBe(values[index]);
       index += 1;
     };
 
     // eslint-disable-next-line no-eval
-    eval('for (var entry of subject) { fn(entry); }');
+    eval('for (var Constant of subject) { fn(Constant); }');
   });
 
   itHasWorkingDP('subject should not be writeable', function () {

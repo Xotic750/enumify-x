@@ -26,7 +26,7 @@
  *
  * Requires ES3 or above.
  *
- * @version 1.0.3
+ * @version 1.1.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -37,8 +37,6 @@
 
 var defineProperties = require('object-define-properties-x');
 var defineProperty = require('object-define-property-x');
-var hasOwn = require('has-own-property-x');
-var hasSymbolSupport = require('has-symbol-support-x');
 var create = require('object-create-x');
 var assertIsObject = require('assert-is-object-x');
 var quote = require('string-quote-x');
@@ -51,18 +49,23 @@ var isUndefined = require('validate.io-undefined');
 var getFunctionName = require('get-function-name-x');
 var safeToString = require('safe-to-string-x');
 var some = require('array.prototype.some');
-// eslint-disable-next-line no-unused-vars
 var slice = require('array-slice-x');
 var collections = require('collections-x');
+var symIt = collections.symIt;
 var freeze = Object.freeze || function _freeze(object) {
   return assertIsObject(object);
 };
 
-var reserved = new collections.Set();
-reserved.add('iterate');
-reserved.add('toJSON');
-reserved.add('toString');
-reserved.add('valueOf');
+var reserved = new collections.Set([
+  'forEach',
+  'toJSON',
+  'toString',
+  'valueOf'
+]);
+
+if (safeToString(symIt) === symIt) {
+  reserved.add(symIt);
+}
 
 var $Enum = function Enum(name, value) {
   if (arguments.length > 0) {
@@ -86,6 +89,8 @@ var $Enum = function Enum(name, value) {
   }
 };
 
+defineProperty($Enum, 'symIt', { value: symIt });
+
 defineProperties($Enum.prototype, {
   toJSON: {
     value: function _toJSON() {
@@ -103,8 +108,8 @@ defineProperties($Enum.prototype, {
 });
 
 var init = function _init(CstmCtr, names, unique) {
-  var dKeys = [];
-  var dNames = {};
+  var keys = new collections.Set();
+  var dNames = new collections.Map();
   var dValues = new collections.Map();
   var isClone;
   var items;
@@ -112,13 +117,7 @@ var init = function _init(CstmCtr, names, unique) {
     items = names;
   } else if (isFunction(names) && names.prototype instanceof $Enum) {
     isClone = true;
-    items = [];
-    names.iterate(function _mapper(Constant, key) {
-      items.push({
-        name: key,
-        value: Constant.value
-      });
-    });
+    items = names.toJSON();
   } else {
     throw new Error('bad args');
   }
@@ -134,13 +133,12 @@ var init = function _init(CstmCtr, names, unique) {
     }
 
     var name = ident.name;
-    if (hasOwn(dNames, name)) {
+    if (dNames.has(name)) {
       throw new TypeError('Attempted to reuse name: ' + name);
     }
 
-    dKeys.push(name);
+    dNames.set(name, ident);
     var value = ident.value;
-    dNames[name] = value;
     if (dValues.has(value)) {
       var oName = dValues.get(value);
       if (unique) {
@@ -148,9 +146,10 @@ var init = function _init(CstmCtr, names, unique) {
         throw new TypeError('Duplicate value (' + value + ') found: ' + here);
       }
 
-      ident = CstmCtr[oName];
+      ident = dNames.get(oName);
     } else {
       dValues.set(value, name);
+      keys.add(name);
     }
 
     defineProperty(CstmCtr, name, {
@@ -164,17 +163,16 @@ var init = function _init(CstmCtr, names, unique) {
   });
 
   return {
-    keys: dKeys,
+    keys: keys,
     names: dNames,
     values: dValues
   };
 };
 
-var calcString = function _calcString(ctrName, keys) {
+var calcString = function _calcString(ctrName, names) {
   var strArr = [];
-  // map
-  some(keys, function _reducer(key) {
-    strArr.push(quote(key));
+  names.forEach(function _reducer(Constant) {
+    strArr.push(quote(Constant.name));
   });
 
   return ctrName + ' { ' + strArr.join(', ') + ' }';
@@ -182,7 +180,7 @@ var calcString = function _calcString(ctrName, keys) {
 
 defineProperties($Enum, {
   create: {
-    value: function _create(typeName, names, unique) {
+    value: function _create(typeName, properties, unique) {
       var ctrName = safeToString(typeName);
       if (ctrName === 'undefined' || isValidVarName(ctrName) === false) {
         throw new Error('Invalid enum name: ' + ctrName);
@@ -190,42 +188,39 @@ defineProperties($Enum, {
 
       var CstmCtr;
       var data;
-      var keys;
-      var values;
-      var initiated = false;
-      var asString;
       // eslint-disable-next-line no-unused-vars
-      var eFn = function _eFn(context, args) {
-        if (initiated) {
+      var f = function _f(context, args) {
+        var argsArr = slice(args);
+        if (data) {
           if (isObjectLike(context) && context instanceof CstmCtr) {
             throw new SyntaxError('Enum classes can’t be instantiated');
           }
 
-          return CstmCtr[values.get(args.shift())];
+          return data.names.get(data.values.get(argsArr.shift()));
         }
 
-        $Enum.apply(context, args);
+        $Enum.apply(context, argsArr);
         return context;
       };
 
       // eslint-disable-next-line no-eval
-      CstmCtr = eval('(0,function ' + ctrName + ' (value){return eFn(this,slice(arguments))})');
+      CstmCtr = eval('(0,function ' + ctrName + '(value){return f(this,arguments)})');
 
+      var asString;
       defineProperties(CstmCtr, {
-        iterate: {
-          value: function _iterate(callback, thisArg) {
-            return some(keys, function _iteratee(key) {
-              return Boolean(callback.call(thisArg, CstmCtr[key], key, CstmCtr));
+        forEach: {
+          value: function _forEach(callback, thisArg) {
+            data.keys.forEach(function _iteratee(key) {
+              callback.call(thisArg, data.names.get(key));
             });
           }
         },
 
         toJSON: {
           value: function _toJSON() {
-            var value = {};
-            // forEach
-            some(keys, function _reducer(key) {
-              value[key] = CstmCtr[key].toJSON();
+            var value = [];
+            data.names.forEach(function _reducer(Constant) {
+              value.push(Constant.toJSON());
             });
 
             return value;
@@ -235,7 +230,7 @@ defineProperties($Enum, {
         toString: {
           value: function _toString() {
             if (isUndefined(asString)) {
-              asString = calcString(ctrName, keys);
+              asString = calcString(ctrName, data.names);
             }
 
             return asString;
@@ -243,24 +238,20 @@ defineProperties($Enum, {
         }
       });
 
-      if (hasSymbolSupport) {
-        defineProperty(CstmCtr, Symbol.iterator, {
-          value: function _iterator() {
-            var index = 0;
-            return {
-              next: function _next() {
-                if (index < keys.length) {
-                  var key = keys[index];
-                  index += 1;
-                  return { done: false, value: [key, CstmCtr[key]] };
-                }
-
-                return { done: true };
-              }
-            };
-          }
-        });
-      }
+      defineProperty(CstmCtr, symIt, {
+        value: function _iterator() {
+          var iter = data.keys[symIt]();
+          return {
+            next: function _next() {
+              var next = iter.next();
+              return next.done ? next : {
+                done: false,
+                value: data.names.get(next.value)
+              };
+            }
+          };
+        }
+      });
 
       CstmCtr.prototype = create($Enum.prototype);
       defineProperties(CstmCtr.prototype, {
@@ -268,10 +259,7 @@ defineProperties($Enum, {
         name: { value: ctrName }
       });
 
-      data = init(CstmCtr, names, unique);
-      keys = data.keys;
-      values = data.values;
-      initiated = true;
+      data = init(CstmCtr, properties, unique);
       return freeze(CstmCtr);
     }
   }
@@ -281,6 +269,8 @@ defineProperties($Enum, {
  * An enumeration is a set of symbolic names (members) bound to unique, constant
  * values. Within an enumeration, the members can be compared by identity, and
  * the enumeration itself can be iterated over.
+ * Influenced by Python's Enum implimentation.
+ * @see {@link https://docs.python.org/3/library/enum.html}
  *
  * @param {string} typeName The name of the enum collection.
  * @param {Array.<string|Object>} names An array of valid initiators.
@@ -302,6 +292,9 @@ defineProperties($Enum, {
  * myEnum.BLUE.name; // 'BLUE'
  * myEnum.BLUE.value; // 10
  * myEnum.BLACK === myEnum.YELLOW; // true
+ * myEnum.PINK.toString(); // 'myEnum.PINK'
+ * myEnum.toString(); // 'myEnum { "RED", "YELLOW", "BLUE", "PINK", "BLACK" }'
+ * myEnum.PINK instanceof myEnum; // true
  *
  * // No aliases are allowed in this example.
  * var unique = true;
@@ -310,17 +303,51 @@ defineProperties($Enum, {
  *   'YELLOW',
  * ], unique);
  *
- * JSON.stringify(anEnum); // '{"RED":{"name":"RED","value":0},"YELLOW":{"name":"YELLOW","value":1}}'
+ * JSON.stringify(anEnum); // '[{"name":"RED","value":0},{"name":"YELLOW","value":1}]'
  *
- * // Enum#iterate works like Array#some in that the iteration will stop if
- * // a truthy value is returned by the iteratee function.
- * anEnum.iterate(function (Constant, key, obj) {}, thisArg);
+ * // The forEach() method executes a provided function once per each
+ * // name/value pair in the Enum object, in insertion order.
+ * // Iterating over the members of an enum does not provide the aliases.
+ * anEnum.forEach(function (Constant) {}, thisArg);
+ *
+ * // Where supported, for..of can be used.
+ * // Iterating over the members of an enum does not provide the aliases.
+ * for (const { name, value } of anEnum) {
+ *   console.log(name, value);
+ * }
+ *
+ * // Otherwise, standard iterator pattern.
+ * // Iterating over the members of an enum does not provide the aliases.
+ * var iter = anEnum[Enum.symIt]();
+ * var next = iter.next();
+ * while (next.done === false) {
+ *   var Constant = next.value;
+ *   console.log(Constant.name, Constant.value)
+ *   next = iter.next();
+ * }
+ *
+ * // To iterate all items, including aliases.
+ * var allConstants = anEnum.toJSON();
+ * allConstants.forEach(function(Constant) {
+ *    console.log(Constant.name, Constant.value);
+ * });
+ *
+ * // Lookups can be perfomed on the value and not just the name.
+ * anEnum(0) === anEnum.RED; // true
+ * anEnum(1) === anEnum['YELLOW']; // true
  *
  * // Values can be anything, but names must be a string.
- * var myEnum = Enum.create('myEnum', [
+ * var anotherEnum = Enum.create('myEnum', [
  *   { name: 'OBJECT', value: {} },
  *   { name: 'ARRAY', value: [] },
  *   { name: 'FUNCTION', value: function () {} }
  * ]);
+ *
+ * // Enums can be cloned
+ * var cloneEnum = Enum.create('cloneEnum', anotherEnum);
+ * cloneEnum === anotherEnum; // false
+ * cloneEnum.OBJECT === anotherEnum.OBJECT; // false
+ * cloneEnum.OBJECT.name === anotherEnum.OBJECT.name; // true
+ * cloneEnum.OBJECT.value === anotherEnum.OBJECT.value; // true
  */
 module.exports = $Enum;
