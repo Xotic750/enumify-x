@@ -26,7 +26,7 @@
  *
  * Requires ES3 or above.
  *
- * @version 1.1.0
+ * @version 1.2.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -52,14 +52,17 @@ var some = require('array.prototype.some');
 var slice = require('array-slice-x');
 var collections = require('collections-x');
 var symIt = collections.symIt;
+var objKeys = Object.keys || require('object-keys');
 var freeze = Object.freeze || function _freeze(object) {
   return assertIsObject(object);
 };
 
 var reserved = new collections.Set([
   'forEach',
+  'name',
   'toJSON',
   'toString',
+  'value',
   'valueOf'
 ]);
 
@@ -70,7 +73,7 @@ if (safeToString(symIt) === symIt) {
 var $Enum = function Enum(name, value) {
   if (arguments.length > 0) {
     var strName = safeToString(name);
-    if (reserved.has(reserved)) {
+    if (reserved.has(strName)) {
       throw new SyntaxError('Name is reserved: ' + strName);
     }
 
@@ -107,29 +110,47 @@ defineProperties($Enum.prototype, {
   }
 });
 
-var init = function _init(CstmCtr, names, unique) {
+var generateNextValue = function _generateNextValue() {
+  var count = 0;
+  return {
+    next: function _next(name, value) {
+      if (isSafeInteger(value)) {
+        count = value;
+      }
+
+      var result = count;
+      count += 1;
+      return result;
+    }
+  };
+};
+
+var init = function _init(CstmCtr, properties, opts) {
   var keys = new collections.Set();
   var dNames = new collections.Map();
   var dValues = new collections.Map();
   var isClone;
   var items;
-  if (isArrayLike(names)) {
-    items = names;
-  } else if (isFunction(names) && names.prototype instanceof $Enum) {
+  if (isArrayLike(properties)) {
+    items = properties;
+  } else if (isFunction(properties) && properties.prototype instanceof $Enum) {
     isClone = true;
-    items = names.toJSON();
+    items = properties.toJSON();
   } else {
     throw new Error('bad args');
   }
 
-  var count = 0;
+  var iter = isFunction(opts.auto) ? opts.auto() : generateNextValue();
+  var next;
   // forEach
   some(items, function _define(item) {
     var ident;
     if (isClone || isObjectLike(item)) {
+      next = iter.next(item.name, item.value);
       ident = new CstmCtr(item.name, item.value);
     } else {
-      ident = new CstmCtr(item, count);
+      next = iter.next(item);
+      ident = new CstmCtr(item, next);
     }
 
     var name = ident.name;
@@ -141,7 +162,7 @@ var init = function _init(CstmCtr, names, unique) {
     var value = ident.value;
     if (dValues.has(value)) {
       var oName = dValues.get(value);
-      if (unique) {
+      if (opts.unique) {
         var here = name + ' -> ' + oName;
         throw new TypeError('Duplicate value (' + value + ') found: ' + here);
       }
@@ -156,10 +177,6 @@ var init = function _init(CstmCtr, names, unique) {
       enumerable: true,
       value: ident
     });
-
-    if (isSafeInteger(value)) {
-      count = value + 1;
-    }
   });
 
   return {
@@ -171,8 +188,8 @@ var init = function _init(CstmCtr, names, unique) {
 
 var calcString = function _calcString(ctrName, names) {
   var strArr = [];
-  names.forEach(function _reducer(Constant) {
-    strArr.push(quote(Constant.name));
+  names.forEach(function _reducer(enumMember) {
+    strArr.push(quote(enumMember.name));
   });
 
   return ctrName + ' { ' + strArr.join(', ') + ' }';
@@ -180,12 +197,13 @@ var calcString = function _calcString(ctrName, names) {
 
 defineProperties($Enum, {
   create: {
-    value: function _create(typeName, properties, unique) {
+    value: function _create(typeName, properties, options) {
       var ctrName = safeToString(typeName);
       if (ctrName === 'undefined' || isValidVarName(ctrName) === false) {
         throw new Error('Invalid enum name: ' + ctrName);
       }
 
+      var opts = isObjectLike(options) ? options : {};
       var CstmCtr;
       var data;
       // eslint-disable-next-line no-unused-vars
@@ -219,8 +237,8 @@ defineProperties($Enum, {
         toJSON: {
           value: function _toJSON() {
             var value = [];
-            data.names.forEach(function _reducer(Constant) {
-              value.push(Constant.toJSON());
+            data.names.forEach(function _reducer(enumMember) {
+              value.push(enumMember.toJSON());
             });
 
             return value;
@@ -259,7 +277,35 @@ defineProperties($Enum, {
         name: { value: ctrName }
       });
 
-      data = init(CstmCtr, properties, unique);
+      if (isObjectLike(opts.classMethods)) {
+        some(objKeys(opts.classMethods), function (key) {
+          if (reserved.has(key)) {
+            throw new SyntaxError('Name is reserved: ' + key);
+          }
+
+          var method = opts.classMethods[key];
+          if (isFunction(method)) {
+            defineProperty(CstmCtr, key, { value: method });
+            reserved.add(key);
+          }
+        });
+      }
+
+      if (isObjectLike(opts.instanceMethods)) {
+        some(objKeys(opts.instanceMethods), function (key) {
+          if (reserved.has(key)) {
+            throw new SyntaxError('Name is reserved: ' + key);
+          }
+
+          var method = opts.instanceMethods[key];
+          if (isFunction(method)) {
+            defineProperty(CstmCtr.prototype, key, { value: method });
+            reserved.add(key);
+          }
+        });
+      }
+
+      data = init(CstmCtr, properties, opts);
       return freeze(CstmCtr);
     }
   }
@@ -279,8 +325,18 @@ defineProperties($Enum, {
  * @example
  * var Enum = require('enumify-x');
  *
- * // example allows duplicate values, known as aliases.
- * var myEnum = Enum.create('myEnum', [
+ * // Creating an Enum
+ * // Example allows duplicate values, known as aliases.
+ * // Member values can be anything: number, string, etc.. If the exact value is
+ * // unimportant you may use auto instances and an appropriate value will be
+ * // chosen for you. Care must be taken if you mix auto with other values.
+ * //
+ * // The class Color is an enumeration (or enum)
+ * // The attributes Color.RED, Color.GREEN, etc., are enumeration members
+ * // (or enum members) and are functionally constants.
+ * // The enum members have names and values (the name of Color.RED is RED,
+ * // value of Color.BLUE is 10, etc.)
+ * var Color = Enum.create('Color', [
  *   'RED', // auto assign value, starting 0
  *   'YELLOW', // auto assign value, will be 1
  *   { name: 'BLUE', value: 10 },
@@ -288,56 +344,85 @@ defineProperties($Enum, {
  *   { name: 'BLACK', value: 1 } // This is an alias for YELLOW
  * ]);
  *
- * myEnum.YELLOW; // { name: 'YELLOW', value: 1 }
- * myEnum.BLUE.name; // 'BLUE'
- * myEnum.BLUE.value; // 10
- * myEnum.BLACK === myEnum.YELLOW; // true
- * myEnum.PINK.toString(); // 'myEnum.PINK'
- * myEnum.toString(); // 'myEnum { "RED", "YELLOW", "BLUE", "PINK", "BLACK" }'
- * myEnum.PINK instanceof myEnum; // true
+ * Color.YELLOW; // { name: 'YELLOW', value: 1 }
+ * Color.BLUE.name; // 'BLUE'
+ * Color.BLUE.value; // 10
+ * Color.BLACK === Color.YELLOW; // true
+ * // Enumeration members have human readable string representations.
+ * Color.PINK.toString(); // 'Color.PINK'
+ * // Enums also have a human readable string representations.
+ * Color.toString(); // 'Color { "RED", "YELLOW", "BLUE", "PINK", "BLACK" }'
+ * // The type of an enumeration member is the enumeration it belongs to.
+ * Color.PINK instanceof Color; // true
+ * // You can access by value too.
+ * Color(10); // Color.BLUE
+ *
+ * // Enumeration members are hashable, so they can be used as property names.
+ * var apples = {};
+ * apples[Color.RED] = 'Red Delicious';
+ * apples[Color.YELLOW] = 'Golden Delicious'
+ * apples; // {Color.RED: 'Red Delicious', Color.YELLOW: 'Golden Delicious'}
+ *
+ * // Having two enum members with the same name is invalid
+ * var Fail = Enum.create('Fail', [
+ *   'RED',
+ *   'RED',
+ * ], opts);
+ *
+ * // However, two enum members are allowed to have the same value. Given two
+ * // members A and B with the same value (and A defined first), B is an alias
+ * // to A. By-value lookup of the value of A and B will return A. By-name
+ * // lookup of B will also return A. as seen in the definition of Color.
  *
  * // No aliases are allowed in this example.
- * var unique = true;
- * var anEnum = Enum.create('myEnum', [
+ * var opts = {
+ *   unique: true
+ * };
+ *
+ * var Color1 = Enum.create('Color1', [
  *   'RED',
  *   'YELLOW',
- * ], unique);
+ * ], opts);
  *
- * JSON.stringify(anEnum); // '[{"name":"RED","value":0},{"name":"YELLOW","value":1}]'
+ * // Depending on the value types used, enumerations are serialisable.
+ * JSON.stringify(Color1); // '[{"name":"RED","value":0},{"name":"YELLOW","value":1}]'
  *
+ * // Enumerations support iteration, in definition order.
  * // The forEach() method executes a provided function once per each
  * // name/value pair in the Enum object, in insertion order.
  * // Iterating over the members of an enum does not provide the aliases.
- * anEnum.forEach(function (Constant) {}, thisArg);
+ * Color1.forEach(function (enumMember) {
+ *   console.log(enumMember.name, enumMember.value)
+ * }, thisArg);
  *
  * // Where supported, for..of can be used.
  * // Iterating over the members of an enum does not provide the aliases.
- * for (const { name, value } of anEnum) {
+ * for (const { name, value } of Color1) {
  *   console.log(name, value);
  * }
  *
  * // Otherwise, standard iterator pattern.
  * // Iterating over the members of an enum does not provide the aliases.
- * var iter = anEnum[Enum.symIt]();
+ * var iter = Color1[Enum.symIt]();
  * var next = iter.next();
  * while (next.done === false) {
- *   var Constant = next.value;
- *   console.log(Constant.name, Constant.value)
+ *   var enumMember = next.value;
+ *   console.log(enumMember.name, enumMember.value)
  *   next = iter.next();
  * }
  *
  * // To iterate all items, including aliases.
- * var allConstants = anEnum.toJSON();
- * allConstants.forEach(function(Constant) {
- *    console.log(Constant.name, Constant.value);
+ * var allenumMembers = Color1.toJSON();
+ * allenumMembers.forEach(function(enumMember) {
+ *    console.log(enumMember.name, enumMember.value);
  * });
  *
  * // Lookups can be perfomed on the value and not just the name.
- * anEnum(0) === anEnum.RED; // true
- * anEnum(1) === anEnum['YELLOW']; // true
+ * Color1(0) === Color1.RED; // true
+ * Color1(1) === Color1['YELLOW']; // true
  *
  * // Values can be anything, but names must be a string.
- * var anotherEnum = Enum.create('myEnum', [
+ * var anotherEnum = Enum.create('anotherEnum', [
  *   { name: 'OBJECT', value: {} },
  *   { name: 'ARRAY', value: [] },
  *   { name: 'FUNCTION', value: function () {} }
@@ -349,5 +434,52 @@ defineProperties($Enum, {
  * cloneEnum.OBJECT === anotherEnum.OBJECT; // false
  * cloneEnum.OBJECT.name === anotherEnum.OBJECT.name; // true
  * cloneEnum.OBJECT.value === anotherEnum.OBJECT.value; // true
+ *
+ * // Options
+ * // unique: {boolean} - whether aliases are allowed.
+ * // auto: {Function} - if you wish to define your own auto value allocation.
+ * // classMethods: {Object<Function>} - to defined methods on the enum.
+ * // instanceMethods: {Object<Function>} - to defined methods on the enum members.
+ *
+ * // ------------------------------------------------------
+ *
+ * var opts1 = {
+ *   auto: function () {
+ *     return {
+ *       next: function (name, value) {
+ *         return name;
+ *       }
+ *     };
+ *   }
+ * };
+ *
+ * var subject1 = Enum.create('subject1', ['RED'], opts1);
+ * subject1.RED; // { name: 'RED', value: 'RED'}
+ *
+ * // ------------------------------------------------------
+ *
+ * var opts2 = {
+ *   classMethods: {
+ *     favourite: function () {
+ *       return this.RED;
+ *     }
+ *   }
+ * };
+ *
+ * var subject2 = Enum.create('subject2', ['RED'], opts2);
+ * subject2.favourite() === subject2.RED; // true
+ *
+ * // ------------------------------------------------------
+ *
+ * var opts3 = {
+ *   instanceMethods: {
+ *     description: function () {
+ *       return 'Description: ' + this.toString();
+ *     }
+ *   }
+ * };
+ *
+ * var subject3 = Enum.create('subject3', ['RED'], opts3);
+ * subject3.RED.description()) === 'Description: subject3.RED'; // true
  */
 module.exports = $Enum;
