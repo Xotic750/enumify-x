@@ -73,10 +73,36 @@ describe('Enum', function () {
   var subjectProps;
 
   beforeEach(function () {
-    namesWithoutAliases = ['RED', 'YELLOW', 'BLUE', 'PINK', 'GREY'];
-    valuesWithoutAliases = [0, 1, 10, 11, Object];
-    namesWithAliases = ['RED', 'YELLOW', 'BLUE', 'PINK', 'BLACK', 'GREY'];
-    valuesWithAliases = [0, 1, 10, 11, 1, Object];
+    namesWithoutAliases = [
+      'RED',
+      'YELLOW',
+      'BLUE',
+      'PINK',
+      'GREY'
+    ];
+    valuesWithoutAliases = [
+      0,
+      1,
+      10,
+      11,
+      Object
+    ];
+    namesWithAliases = [
+      'RED',
+      'YELLOW',
+      'BLUE',
+      'PINK',
+      'BLACK',
+      'GREY'
+    ];
+    valuesWithAliases = [
+      0,
+      1,
+      10,
+      11,
+      1,
+      Object
+    ];
     subject = null;
     subjectName = 'subject';
     subjectProps = [
@@ -159,13 +185,22 @@ describe('Enum', function () {
   });
 
   it('should no throw if name is not reserved', function () {
-    var props = ['call', 'hasOwnProperty', 'apply'];
+    var props = [
+      'call',
+      'hasOwnProperty',
+      'apply'
+    ];
     Enum.create(subjectName, props);
 
   });
 
   it('should throw if name is reserved', function () {
-    var props = ['forEach', 'toJSON', 'toString', 'valueOf'];
+    var props = [
+      'forEach',
+      'toJSON',
+      'toString',
+      'valueOf'
+    ];
     props.forEach(function (prop) {
       expect(function () {
         Enum.create(subjectName, [prop]);
@@ -194,7 +229,16 @@ describe('Enum', function () {
   });
 
   it('should throw on invalid typeName', function () {
-    var badNames = ['', '123', {}, [], 'null', 'undefined', 'var', 'const'];
+    var badNames = [
+      '',
+      '123',
+      {},
+      [],
+      'null',
+      'undefined',
+      'var',
+      'const'
+    ];
     badNames.forEach(function (name) {
       expect(function () {
         Enum.create(name, subjectProps);
