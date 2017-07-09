@@ -1,6 +1,8 @@
 <a name="module_enumify-x"></a>
 
 ## enumify-x
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/Xotic750/enumify-x.svg)](https://greenkeeper.io/)
 <a href="https://travis-ci.org/Xotic750/enumify-x"
 title="Travis status">
 <img
