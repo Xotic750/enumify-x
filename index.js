@@ -1,32 +1,6 @@
 /**
- * @file
- * <a href="https://travis-ci.org/Xotic750/enumify-x"
- * title="Travis status">
- * <img
- * src="https://travis-ci.org/Xotic750/enumify-x.svg?branch=master"
- * alt="Travis status" height="18">
- * </a>
- * <a href="https://david-dm.org/Xotic750/enumify-x"
- * title="Dependency status">
- * <img src="https://david-dm.org/Xotic750/enumify-x.svg"
- * alt="Dependency status" height="18"/>
- * </a>
- * <a
- * href="https://david-dm.org/Xotic750/enumify-x#info=devDependencies"
- * title="devDependency status">
- * <img src="https://david-dm.org/Xotic750/enumify-x/dev-status.svg"
- * alt="devDependency status" height="18"/>
- * </a>
- * <a href="https://badge.fury.io/js/enumify-x" title="npm version">
- * <img src="https://badge.fury.io/js/enumify-x.svg"
- * alt="npm version" height="18">
- * </a>
- *
- * Enum module.
- *
- * Requires ES3 or above.
- *
- * @version 1.4.0
+ * @file Enumerated type library.
+ * @version 1.6.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -37,7 +11,7 @@
 
 var defineProperties = require('object-define-properties-x');
 var defineProperty = require('object-define-property-x');
-var create = require('object-create-x');
+var $create = require('object-create-x');
 var assertIsObject = require('assert-is-object-x');
 var quote = require('string-quote-x');
 var isObjectLike = require('is-object-like-x');
@@ -52,7 +26,7 @@ var some = require('array.prototype.some');
 var slice = require('array-slice-x');
 var collections = require('collections-x');
 var symIt = collections.symIt;
-var objKeys = Object.keys || require('object-keys');
+var objKeys = require('object-keys-x');
 var freeze = Object.freeze || function _freeze(object) {
   return assertIsObject(object);
 };
@@ -70,6 +44,13 @@ if (safeToString(symIt) === symIt) {
   reserved.add(symIt);
 }
 
+/**
+ * Create an enum name/value.
+ * @private
+ * @param {string} name - The name of the enum.
+ * @param {*} - value The value of the enum.
+ * @returns {Object} The enum.
+ */
 var $Enum = function Enum(name, value) {
   if (arguments.length > 0) {
     var strName = safeToString(name);
@@ -96,7 +77,7 @@ defineProperty($Enum, 'symIt', { value: symIt });
 
 defineProperties($Enum.prototype, {
   toJSON: {
-    value: function _toJSON() {
+    value: function toJSON() {
       return {
         name: this.name,
         value: this.value
@@ -110,22 +91,24 @@ defineProperties($Enum.prototype, {
   }
 });
 
-var generateNextValue = function _generateNextValue() {
+var $generateNextValue = function generateNextValue() {
   var count = 0;
-  return {
-    next: function _next(name, value) {
-      if (isSafeInteger(value)) {
-        count = value;
-      }
-
-      var result = count;
-      count += 1;
-      return result;
+  var $next = function next(name, value) {
+    if (isSafeInteger(value)) {
+      count = value;
     }
+
+    var result = count;
+    count += 1;
+    return result;
+  };
+
+  return {
+    next: $next
   };
 };
 
-var init = function _init(CstmCtr, properties, opts) {
+var $init = function init(CstmCtr, properties, opts) {
   var keys = new collections.Set();
   var dNames = new collections.Map();
   var dValues = new collections.Map();
@@ -140,7 +123,7 @@ var init = function _init(CstmCtr, properties, opts) {
     throw new Error('bad args');
   }
 
-  var iter = isFunction(opts.auto) ? opts.auto() : generateNextValue();
+  var iter = isFunction(opts.auto) ? opts.auto() : $generateNextValue();
   var next;
   // forEach
   some(items, function _define(item) {
@@ -186,7 +169,7 @@ var init = function _init(CstmCtr, properties, opts) {
   };
 };
 
-var calcString = function _calcString(ctrName, names) {
+var $calcString = function calcString(ctrName, names) {
   var strArr = [];
   names.forEach(function _reducer(enumMember) {
     strArr.push(quote(enumMember.name));
@@ -196,132 +179,13 @@ var calcString = function _calcString(ctrName, names) {
 };
 
 defineProperties($Enum, {
-  create: {
-    value: function _create(typeName, properties, options) {
-      var ctrName = safeToString(typeName);
-      if (ctrName === 'undefined' || isValidVarName(ctrName) === false) {
-        throw new Error('Invalid enum name: ' + ctrName);
-      }
-
-      var opts = isObjectLike(options) ? options : {};
-      var CstmCtr;
-      var data;
-      // eslint-disable-next-line no-unused-vars
-      var f = function _f(context, args) {
-        var argsArr = slice(args);
-        if (data) {
-          if (isObjectLike(context) && context instanceof CstmCtr) {
-            throw new SyntaxError('Enum classes can’t be instantiated');
-          }
-
-          return data.names.get(data.values.get(argsArr.shift()));
-        }
-
-        $Enum.apply(context, argsArr);
-        return context;
-      };
-
-      // eslint-disable-next-line no-eval
-      CstmCtr = eval('(0,function ' + ctrName + '(value){return f(this,arguments)})');
-
-      var asString;
-      defineProperties(CstmCtr, {
-        forEach: {
-          value: function _forEach(callback, thisArg) {
-            data.keys.forEach(function _iteratee(key) {
-              callback.call(thisArg, data.names.get(key));
-            });
-          }
-        },
-
-        toJSON: {
-          value: function _toJSON() {
-            var value = [];
-            data.names.forEach(function _reducer(enumMember) {
-              value.push(enumMember.toJSON());
-            });
-
-            return value;
-          }
-        },
-
-        toString: {
-          value: function _toString() {
-            if (isUndefined(asString)) {
-              asString = calcString(ctrName, data.names);
-            }
-
-            return asString;
-          }
-        }
-      });
-
-      defineProperty(CstmCtr, symIt, {
-        value: function _iterator() {
-          var iter = data.keys[symIt]();
-          return {
-            next: function _next() {
-              var next = iter.next();
-              return next.done ? next : {
-                done: false,
-                value: data.names.get(next.value)
-              };
-            }
-          };
-        }
-      });
-
-      CstmCtr.prototype = create($Enum.prototype);
-      defineProperties(CstmCtr.prototype, {
-        constructor: { value: CstmCtr },
-        name: { value: ctrName }
-      });
-
-      if (isObjectLike(opts.classMethods)) {
-        some(objKeys(opts.classMethods), function (key) {
-          if (reserved.has(key)) {
-            throw new SyntaxError('Name is reserved: ' + key);
-          }
-
-          var method = opts.classMethods[key];
-          if (isFunction(method)) {
-            defineProperty(CstmCtr, key, { value: method });
-            reserved.add(key);
-          }
-        });
-      }
-
-      if (isObjectLike(opts.instanceMethods)) {
-        some(objKeys(opts.instanceMethods), function (key) {
-          if (reserved.has(key)) {
-            throw new SyntaxError('Name is reserved: ' + key);
-          }
-
-          var method = opts.instanceMethods[key];
-          if (isFunction(method)) {
-            defineProperty(CstmCtr.prototype, key, { value: method });
-            reserved.add(key);
-          }
-        });
-      }
-
-      data = init(CstmCtr, properties, opts);
-      return freeze(CstmCtr);
-    }
-  }
-});
-
 /**
- * An enumeration is a set of symbolic names (members) bound to unique, constant
- * values. Within an enumeration, the members can be compared by identity, and
- * the enumeration itself can be iterated over.
- * Influenced by Python's Enum implimentation.
- * @see {@link https://docs.python.org/3/library/enum.html}
+ * Creates an enumeration collection. Primary method.
  *
- * @param {string} typeName The name of the enum collection.
- * @param {Array.<string|Object>} names An array of valid initiators.
- * @param {Boolean} [unique] Ensure unique enumeration values.
- * @return {Function} The enum collection.
+ * @param {string} typeName - The name of the enum collection.
+ * @param {Array} properties - Initialiser array.
+ * @param {Object} options - Options to determine behaviour.
+ * @returns {Function} The enumeration collection.
  * @example
  * var Enum = require('enumify-x');
  *
@@ -481,5 +345,135 @@ defineProperties($Enum, {
  *
  * var subject3 = Enum.create('subject3', ['RED'], opts3);
  * subject3.RED.description()) === 'Description: subject3.RED'; // true
+ */
+  create: {
+    value: function create(typeName, properties, options) {
+      var ctrName = safeToString(typeName);
+      if (ctrName === 'undefined' || isValidVarName(ctrName) === false) {
+        throw new Error('Invalid enum name: ' + ctrName);
+      }
+
+      var opts = isObjectLike(options) ? options : {};
+      var CstmCtr;
+      var data;
+      // eslint-disable-next-line no-unused-vars
+      var f = function _f(context, args) {
+        var argsArr = slice(args);
+        if (data) {
+          if (isObjectLike(context) && context instanceof CstmCtr) {
+            throw new SyntaxError('Enum classes can’t be instantiated');
+          }
+
+          return data.names.get(data.values.get(argsArr.shift()));
+        }
+
+        $Enum.apply(context, argsArr);
+        return context;
+      };
+
+      // eslint-disable-next-line no-eval
+      CstmCtr = eval('(0,function ' + ctrName + '(value){return f(this,arguments)})');
+
+      var asString;
+      defineProperties(CstmCtr, {
+        forEach: {
+          value: function forEach(callback, thisArg) {
+            data.keys.forEach(function _iteratee(key) {
+              callback.call(thisArg, data.names.get(key));
+            });
+          }
+        },
+
+        toJSON: {
+          value: function toJSON() {
+            var value = [];
+            data.names.forEach(function _reducer(enumMember) {
+              value.push(enumMember.toJSON());
+            });
+
+            return value;
+          }
+        },
+
+        toString: {
+          value: function _toString() {
+            if (isUndefined(asString)) {
+              asString = $calcString(ctrName, data.names);
+            }
+
+            return asString;
+          }
+        }
+      });
+
+      defineProperty(CstmCtr, symIt, {
+        value: function iterator() {
+          var iter = data.keys[symIt]();
+          var $next = function next() {
+            var nxt = iter.next();
+            return nxt.done ? nxt : {
+              done: false,
+              value: data.names.get(nxt.value)
+            };
+          };
+
+          return {
+            next: $next
+          };
+        }
+      });
+
+      CstmCtr.prototype = $create($Enum.prototype);
+      defineProperties(CstmCtr.prototype, {
+        constructor: { value: CstmCtr },
+        name: { value: ctrName }
+      });
+
+      if (isObjectLike(opts.classMethods)) {
+        some(objKeys(opts.classMethods), function _some1(key) {
+          if (reserved.has(key)) {
+            throw new SyntaxError('Name is reserved: ' + key);
+          }
+
+          var method = opts.classMethods[key];
+          if (isFunction(method)) {
+            defineProperty(CstmCtr, key, { value: method });
+            reserved.add(key);
+          }
+        });
+      }
+
+      if (isObjectLike(opts.instanceMethods)) {
+        some(objKeys(opts.instanceMethods), function _some2(key) {
+          if (reserved.has(key)) {
+            throw new SyntaxError('Name is reserved: ' + key);
+          }
+
+          var method = opts.instanceMethods[key];
+          if (isFunction(method)) {
+            defineProperty(CstmCtr.prototype, key, { value: method });
+            reserved.add(key);
+          }
+        });
+      }
+
+      data = $init(CstmCtr, properties, opts);
+      return freeze(CstmCtr);
+    }
+  }
+});
+
+/**
+ * An enumeration is a set of symbolic names (members) bound to unique, constant
+ * values. Within an enumeration, the members can be compared by identity, and
+ * the enumeration itself can be iterated over.
+ * Influenced by Python's Enum implimentation.
+ *
+ * Create an enum name/value. Not usually called directly.
+ *
+ * @see {@link https://docs.python.org/3/library/enum.html}
+ * @param {string} name - The name of the enum.
+ * @param {*} - value The value of the enum.
+ * @returns {Object} The enum.
  */
 module.exports = $Enum;
