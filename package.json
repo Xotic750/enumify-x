@@ -1,6 +1,6 @@
 {
   "name": "enumify-x",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Enumerated type library.",
   "homepage": "https://github.com/Xotic750/enumify-x.git",
   "repository": {
@@ -39,7 +39,6 @@
   ],
   "dependencies": {
     "is-var-name": "^2.0.0",
-    "js-logger": "^1.6.0",
     "lodash": "^4.17.11"
   },
   "devDependencies": {

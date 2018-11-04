@@ -27,7 +27,6 @@
         "useESModules": false
       }
     ],
-    "js-logger",
     "lodash"
   ]
 }
