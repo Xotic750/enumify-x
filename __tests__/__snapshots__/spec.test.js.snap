@@ -1,0 +1,133 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EnumifyX MIN bad properties arg 1`] = `"bad args"`;
+
+exports[`EnumifyX MIN class method names get added to the reserved list 1`] = `"Name is reserved: favourite"`;
+
+exports[`EnumifyX MIN instance method names get added to the reserved list 1`] = `"Name is reserved: description"`;
+
+exports[`EnumifyX MIN no args should throw 1`] = `"Invalid enum name: undefined"`;
+
+exports[`EnumifyX MIN should throw if duplicate name used 1`] = `"Attempted to reuse name: RED"`;
+
+exports[`EnumifyX MIN should throw if duplicate value used 1`] = `"Duplicate value (1) found: BLACK -> YELLOW"`;
+
+exports[`EnumifyX MIN should throw if duplicate value used 2`] = `"Duplicate value (NaN) found: b -> a"`;
+
+exports[`EnumifyX MIN should throw if duplicate value used 3`] = `"Duplicate value (0) found: b -> a"`;
+
+exports[`EnumifyX MIN should throw if name is reserved 1`] = `"Name is reserved: forEach"`;
+
+exports[`EnumifyX MIN should throw if name is reserved 2`] = `"Name is reserved: toJSON"`;
+
+exports[`EnumifyX MIN should throw if name is reserved 3`] = `"Name is reserved: toString"`;
+
+exports[`EnumifyX MIN should throw if name is reserved 4`] = `"Name is reserved: valueOf"`;
+
+exports[`EnumifyX MIN should throw on invalid typeName 1`] = `"Invalid enum name: "`;
+
+exports[`EnumifyX MIN should throw on invalid typeName 2`] = `"Invalid enum name: 123"`;
+
+exports[`EnumifyX MIN should throw on invalid typeName 3`] = `"Invalid enum name: [object Object]"`;
+
+exports[`EnumifyX MIN should throw on invalid typeName 4`] = `"Invalid enum name: "`;
+
+exports[`EnumifyX MIN should throw on invalid typeName 5`] = `"Invalid enum name: null"`;
+
+exports[`EnumifyX MIN should throw on invalid typeName 6`] = `"Invalid enum name: undefined"`;
+
+exports[`EnumifyX MIN should throw on invalid typeName 7`] = `"Invalid enum name: var"`;
+
+exports[`EnumifyX MIN should throw on invalid typeName 8`] = `"Invalid enum name: const"`;
+
+exports[`EnumifyX MIN should throw on invalid typeName of Symbol 1`] = `"Invalid enum name: Symbol()"`;
+
+exports[`EnumifyX MIN subject can not be instantiated 1`] = `"Enum classes can’t be instantiated"`;
+
+exports[`EnumifyX RAW bad properties arg 1`] = `"bad args"`;
+
+exports[`EnumifyX RAW class method names get added to the reserved list 1`] = `"Name is reserved: favourite"`;
+
+exports[`EnumifyX RAW instance method names get added to the reserved list 1`] = `"Name is reserved: description"`;
+
+exports[`EnumifyX RAW no args should throw 1`] = `"Invalid enum name: undefined"`;
+
+exports[`EnumifyX RAW should throw if duplicate name used 1`] = `"Attempted to reuse name: RED"`;
+
+exports[`EnumifyX RAW should throw if duplicate value used 1`] = `"Duplicate value (1) found: BLACK -> YELLOW"`;
+
+exports[`EnumifyX RAW should throw if duplicate value used 2`] = `"Duplicate value (NaN) found: b -> a"`;
+
+exports[`EnumifyX RAW should throw if duplicate value used 3`] = `"Duplicate value (0) found: b -> a"`;
+
+exports[`EnumifyX RAW should throw if name is reserved 1`] = `"Name is reserved: forEach"`;
+
+exports[`EnumifyX RAW should throw if name is reserved 2`] = `"Name is reserved: toJSON"`;
+
+exports[`EnumifyX RAW should throw if name is reserved 3`] = `"Name is reserved: toString"`;
+
+exports[`EnumifyX RAW should throw if name is reserved 4`] = `"Name is reserved: valueOf"`;
+
+exports[`EnumifyX RAW should throw on invalid typeName 1`] = `"Invalid enum name: "`;
+
+exports[`EnumifyX RAW should throw on invalid typeName 2`] = `"Invalid enum name: 123"`;
+
+exports[`EnumifyX RAW should throw on invalid typeName 3`] = `"Invalid enum name: [object Object]"`;
+
+exports[`EnumifyX RAW should throw on invalid typeName 4`] = `"Invalid enum name: "`;
+
+exports[`EnumifyX RAW should throw on invalid typeName 5`] = `"Invalid enum name: null"`;
+
+exports[`EnumifyX RAW should throw on invalid typeName 6`] = `"Invalid enum name: undefined"`;
+
+exports[`EnumifyX RAW should throw on invalid typeName 7`] = `"Invalid enum name: var"`;
+
+exports[`EnumifyX RAW should throw on invalid typeName 8`] = `"Invalid enum name: const"`;
+
+exports[`EnumifyX RAW should throw on invalid typeName of Symbol 1`] = `"Invalid enum name: Symbol()"`;
+
+exports[`EnumifyX RAW subject can not be instantiated 1`] = `"Enum classes can’t be instantiated"`;
+
+exports[`EnumifyX WEB bad properties arg 1`] = `"bad args"`;
+
+exports[`EnumifyX WEB class method names get added to the reserved list 1`] = `"Name is reserved: favourite"`;
+
+exports[`EnumifyX WEB instance method names get added to the reserved list 1`] = `"Name is reserved: description"`;
+
+exports[`EnumifyX WEB no args should throw 1`] = `"Invalid enum name: undefined"`;
+
+exports[`EnumifyX WEB should throw if duplicate name used 1`] = `"Attempted to reuse name: RED"`;
+
+exports[`EnumifyX WEB should throw if duplicate value used 1`] = `"Duplicate value (1) found: BLACK -> YELLOW"`;
+
+exports[`EnumifyX WEB should throw if duplicate value used 2`] = `"Duplicate value (NaN) found: b -> a"`;
+
+exports[`EnumifyX WEB should throw if duplicate value used 3`] = `"Duplicate value (0) found: b -> a"`;
+
+exports[`EnumifyX WEB should throw if name is reserved 1`] = `"Name is reserved: forEach"`;
+
+exports[`EnumifyX WEB should throw if name is reserved 2`] = `"Name is reserved: toJSON"`;
+
+exports[`EnumifyX WEB should throw if name is reserved 3`] = `"Name is reserved: toString"`;
+
+exports[`EnumifyX WEB should throw if name is reserved 4`] = `"Name is reserved: valueOf"`;
+
+exports[`EnumifyX WEB should throw on invalid typeName 1`] = `"Invalid enum name: "`;
+
+exports[`EnumifyX WEB should throw on invalid typeName 2`] = `"Invalid enum name: 123"`;
+
+exports[`EnumifyX WEB should throw on invalid typeName 3`] = `"Invalid enum name: [object Object]"`;
+
+exports[`EnumifyX WEB should throw on invalid typeName 4`] = `"Invalid enum name: "`;
+
+exports[`EnumifyX WEB should throw on invalid typeName 5`] = `"Invalid enum name: null"`;
+
+exports[`EnumifyX WEB should throw on invalid typeName 6`] = `"Invalid enum name: undefined"`;
+
+exports[`EnumifyX WEB should throw on invalid typeName 7`] = `"Invalid enum name: var"`;
+
+exports[`EnumifyX WEB should throw on invalid typeName 8`] = `"Invalid enum name: const"`;
+
+exports[`EnumifyX WEB should throw on invalid typeName of Symbol 1`] = `"Invalid enum name: Symbol()"`;
+
+exports[`EnumifyX WEB subject can not be instantiated 1`] = `"Enum classes can’t be instantiated"`;

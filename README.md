@@ -147,7 +147,7 @@ for (const { name, value } of Color1) {
 
 // Otherwise, standard iterator pattern.
 // Iterating over the members of an enum does not provide the aliases.
-var iter = Color1[Enum.symIt]();
+var iter = Color1[Symbol.iterator]();
 var next = iter.next();
 while (next.done === false) {
   var enumMember = next.value;
