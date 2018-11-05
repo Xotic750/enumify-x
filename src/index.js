@@ -1,6 +1,7 @@
 import isArrayLike from 'lodash/isArrayLike';
 import isObjectLike from 'lodash/isObjectLike';
 import isVarName from 'is-var-name';
+import isSymbol from 'is-symbol';
 
 const reserved = new Set(['forEach', 'name', 'toJSON', 'toString', 'value', 'valueOf']);
 
@@ -19,7 +20,7 @@ const reserved = new Set(['forEach', 'name', 'toJSON', 'toString', 'value', 'val
  */
 export default function Enum(name, value) {
   if (arguments.length > 0) {
-    const strName = String(name);
+    const strName = isSymbol(name) === false && String(name);
 
     if (reserved.has(strName)) {
       throw new SyntaxError(`Name is reserved: ${strName}`);
@@ -322,7 +323,7 @@ Object.defineProperties(Enum, {
    */
   create: {
     value: function create(typeName, properties, options) {
-      const ctrName = String(typeName);
+      const ctrName = isSymbol(typeName) === false && String(typeName);
 
       if (ctrName === 'undefined' || isVarName(ctrName) === false) {
         throw new Error(`Invalid enum name: ${ctrName}`);

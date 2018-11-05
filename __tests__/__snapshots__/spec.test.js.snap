@@ -40,7 +40,7 @@ exports[`EnumifyX MIN should throw on invalid typeName 7`] = `"Invalid enum name
 
 exports[`EnumifyX MIN should throw on invalid typeName 8`] = `"Invalid enum name: const"`;
 
-exports[`EnumifyX MIN should throw on invalid typeName of Symbol 1`] = `"Invalid enum name: Symbol()"`;
+exports[`EnumifyX MIN should throw on invalid typeName of Symbol 1`] = `"Invalid enum name: false"`;
 
 exports[`EnumifyX MIN subject can not be instantiated 1`] = `"Enum classes can’t be instantiated"`;
 
@@ -84,7 +84,7 @@ exports[`EnumifyX RAW should throw on invalid typeName 7`] = `"Invalid enum name
 
 exports[`EnumifyX RAW should throw on invalid typeName 8`] = `"Invalid enum name: const"`;
 
-exports[`EnumifyX RAW should throw on invalid typeName of Symbol 1`] = `"Invalid enum name: Symbol()"`;
+exports[`EnumifyX RAW should throw on invalid typeName of Symbol 1`] = `"Invalid enum name: false"`;
 
 exports[`EnumifyX RAW subject can not be instantiated 1`] = `"Enum classes can’t be instantiated"`;
 
@@ -128,6 +128,6 @@ exports[`EnumifyX WEB should throw on invalid typeName 7`] = `"Invalid enum name
 
 exports[`EnumifyX WEB should throw on invalid typeName 8`] = `"Invalid enum name: const"`;
 
-exports[`EnumifyX WEB should throw on invalid typeName of Symbol 1`] = `"Invalid enum name: Symbol()"`;
+exports[`EnumifyX WEB should throw on invalid typeName of Symbol 1`] = `"Invalid enum name: false"`;
 
 exports[`EnumifyX WEB subject can not be instantiated 1`] = `"Enum classes can’t be instantiated"`;
