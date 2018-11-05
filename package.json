@@ -1,6 +1,6 @@
 {
   "name": "enumify-x",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Enumerated type library.",
   "homepage": "https://github.com/Xotic750/enumify-x.git",
   "repository": {
@@ -104,7 +104,7 @@
     "semver": "^5.6.0",
     "source-map-loader": "^0.2.4",
     "terser-webpack-plugin": "^1.1.0",
-    "webpack": "^4.25.0",
+    "webpack": "^4.25.1",
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10",

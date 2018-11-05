@@ -374,7 +374,7 @@ Object.defineProperties(Enum, {
         },
 
         toString: {
-          value: function _toString() {
+          value: function toString() {
             if (typeof asString === 'undefined') {
               asString = calcString(ctrName, data.names);
             }

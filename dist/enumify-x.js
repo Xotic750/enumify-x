@@ -1,13 +1,13 @@
 /*!
 {
   "copywrite": "Copyright (c) 2017-present",
-  "date": "2018-11-05T17:23:19.902Z",
+  "date": "2018-11-05T21:39:20.208Z",
   "describe": "",
   "description": "Enumerated type library.",
   "file": "enumify-x.js",
-  "hash": "0562820cf433137b13a3",
+  "hash": "581f3872577405b1d32a",
   "license": "MIT",
-  "version": "2.0.2"
+  "version": "2.0.3"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -527,7 +527,7 @@ Object.defineProperties(Enum, {
           }
         },
         toString: {
-          value: function _toString() {
+          value: function toString() {
             if (typeof asString === 'undefined') {
               asString = calcString(ctrName, data.names);
             }
