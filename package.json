@@ -1,6 +1,6 @@
 {
   "name": "enumify-x",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Enumerated type library.",
   "homepage": "https://github.com/Xotic750/enumify-x.git",
   "repository": {
@@ -21,8 +21,6 @@
     "development": "npm run clean && NODE_ENV=development webpack --bail --config webpack.config.js --progress --profile --colors",
     "lint": "eslint -f 'node_modules/eslint-friendly-formatter' --ext .js .",
     "lint-fix": "npm run lint -- --fix",
-    "precommit": "npm run security && npm run lint && npm test",
-    "prepush": "npm run precommit",
     "production": "npm run clean && NODE_ENV=production webpack --bail --config webpack.config.js --progress --profile --colors",
     "report": "npm run clean && NODE_ENV=production webpack --bail --config webpack.config.js --progress --profile --colors --env.report",
     "security": "npm audit",
@@ -44,6 +42,10 @@
     "javascript",
     "nodejs",
     "browser"
+  ],
+  "files": [
+    "dist",
+    "src"
   ],
   "dependencies": {
     "core-js-pure": "^3.1.4",
