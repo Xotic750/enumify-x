@@ -9,11 +9,14 @@ const methods = [
   {method: MIN, description: `${namePrefix} MIN`},
 ];
 
-const t = function test1() { return undefined; };
+const t = function test1() {
+  return undefined;
+};
 
 const hasFunctionNames = t.name === 'test1';
 const itHasFunctionNames = hasFunctionNames ? it : xit;
 
+/* eslint-disable-next-line compat/compat */
 const hasSymbolSupport = typeof Symbol === 'function' && typeof Symbol('') === 'symbol';
 const itHasSymbolSupport = hasSymbolSupport ? it : xit;
 
@@ -21,6 +24,7 @@ let hasIteratorSupport;
 
 if (hasSymbolSupport) {
   try {
+    /* eslint-disable-next-line no-restricted-syntax */
     for (const x of [true]) {
       hasIteratorSupport = x;
     }
@@ -74,36 +78,10 @@ methods.forEach(({method, description}) => {
     let subjectProps;
 
     beforeEach(() => {
-      namesWithoutAliases = [
-        'RED',
-        'YELLOW',
-        'BLUE',
-        'PINK',
-        'GREY'
-      ];
-      valuesWithoutAliases = [
-        0,
-        1,
-        10,
-        11,
-        Object
-      ];
-      namesWithAliases = [
-        'RED',
-        'YELLOW',
-        'BLUE',
-        'PINK',
-        'BLACK',
-        'GREY'
-      ];
-      valuesWithAliases = [
-        0,
-        1,
-        10,
-        11,
-        1,
-        Object
-      ];
+      namesWithoutAliases = ['RED', 'YELLOW', 'BLUE', 'PINK', 'GREY'];
+      valuesWithoutAliases = [0, 1, 10, 11, Object];
+      namesWithAliases = ['RED', 'YELLOW', 'BLUE', 'PINK', 'BLACK', 'GREY'];
+      valuesWithAliases = [0, 1, 10, 11, 1, Object];
       subjectName = 'subject';
       subjectProps = [
         'RED',
@@ -111,7 +89,7 @@ methods.forEach(({method, description}) => {
         {name: 'BLUE', value: 10},
         'PINK',
         {name: 'BLACK', value: 1},
-        {name: 'GREY', value: Object}
+        {name: 'GREY', value: Object},
       ];
     });
 
@@ -164,9 +142,9 @@ methods.forEach(({method, description}) => {
           return {
             next(name, value) {
               return [name, value];
-            }
+            },
           };
-        }
+        },
       };
 
       const subject = Enum.create(subjectName, subjectProps, opts);
@@ -194,6 +172,7 @@ methods.forEach(({method, description}) => {
     itHasSymbolSupport('should not throw if name is Symbol', () => {
       expect.assertions(1);
 
+      /* eslint-disable-next-line compat/compat */
       const subject = Enum.create(subjectName, [Symbol('symbol')]);
       expect(typeof subject).toStrictEqual('function');
     });
@@ -201,11 +180,7 @@ methods.forEach(({method, description}) => {
     it('should not throw if name is not reserved', () => {
       expect.assertions(1);
 
-      const props = [
-        'call',
-        'hasOwnProperty',
-        'apply'
-      ];
+      const props = ['call', 'hasOwnProperty', 'apply'];
       const subject = Enum.create(subjectName, props);
 
       expect(typeof subject).toStrictEqual('function');
@@ -214,12 +189,7 @@ methods.forEach(({method, description}) => {
     it('should throw if name is reserved', () => {
       expect.assertions(4);
 
-      const props = [
-        'forEach',
-        'toJSON',
-        'toString',
-        'valueOf'
-      ];
+      const props = ['forEach', 'toJSON', 'toString', 'valueOf'];
       props.forEach((prop) => {
         expect(() => {
           Enum.create(subjectName, [prop]);
@@ -234,7 +204,7 @@ methods.forEach(({method, description}) => {
       const properties = [
         subjectProps,
         [{name: 'a', value: NaN}, {name: 'b', value: NaN}],
-        [{name: 'a', value: 0}, {name: 'b', value: -0}]
+        [{name: 'a', value: 0}, {name: 'b', value: -0}],
       ];
 
       properties.forEach((props) => {
@@ -254,16 +224,7 @@ methods.forEach(({method, description}) => {
     it('should throw on invalid typeName', () => {
       expect.assertions(8);
 
-      const badNames = [
-        '',
-        '123',
-        {},
-        [],
-        'null',
-        'undefined',
-        'var',
-        'const'
-      ];
+      const badNames = ['', '123', {}, [], 'null', 'undefined', 'var', 'const'];
       badNames.forEach((name) => {
         expect(() => {
           Enum.create(name, subjectProps);
@@ -275,6 +236,7 @@ methods.forEach(({method, description}) => {
       expect.assertions(1);
 
       expect(() => {
+        /* eslint-disable-next-line compat/compat */
         Enum.create(Symbol(''), subjectProps);
       }).toThrowErrorMatchingSnapshot();
     });
@@ -438,8 +400,8 @@ methods.forEach(({method, description}) => {
         classMethods: {
           favourite() {
             return this.RED;
-          }
-        }
+          },
+        },
       };
 
       const subject = Enum.create(subjectName, subjectProps, opts);
@@ -453,8 +415,8 @@ methods.forEach(({method, description}) => {
         classMethods: {
           favourite() {
             return this.RED;
-          }
-        }
+          },
+        },
       };
 
       expect(() => {
@@ -469,8 +431,8 @@ methods.forEach(({method, description}) => {
         instanceMethods: {
           description() {
             return `Description: ${this.toString()}`;
-          }
-        }
+          },
+        },
       };
 
       const subject = Enum.create(subjectName, subjectProps, opts);
@@ -483,9 +445,9 @@ methods.forEach(({method, description}) => {
       const opts = {
         instanceMethods: {
           description() {
-            return `Description: ${  this.toString()}`;
-          }
-        }
+            return `Description: ${this.toString()}`;
+          },
+        },
       };
 
       expect(() => {
@@ -505,6 +467,7 @@ methods.forEach(({method, description}) => {
         index += 1;
       };
 
+      /* eslint-disable-next-line no-restricted-syntax */
       for (const enumMember of subject) {
         fn(enumMember);
       }

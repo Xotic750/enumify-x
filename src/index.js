@@ -1,7 +1,10 @@
 import isArrayLike from 'lodash/isArrayLike';
 import isObjectLike from 'lodash/isObjectLike';
+import isSafeInteger from 'lodash/isSafeInteger';
 import isVarName from 'is-var-name';
 import isSymbol from 'is-symbol';
+import Set from 'core-js-pure/features/set';
+import Map from 'core-js-pure/features/map';
 
 const reserved = new Set(['forEach', 'name', 'toJSON', 'toString', 'value', 'valueOf']);
 
@@ -16,7 +19,7 @@ const reserved = new Set(['forEach', 'name', 'toJSON', 'toString', 'value', 'val
  * @see @link https://docs.python.org/3/library/enum.html
  * @param {string} name - The name of the enum.
  * @param {*} value - The value of the enum.
- * @returns {Object} The enum.
+ * @returns {object} The enum.
  */
 export default function Enum(name, value) {
   if (arguments.length > 0) {
@@ -62,7 +65,7 @@ const generateNextValue = function _generateNextValue() {
 
   return {
     next(name, value) {
-      if (Number.isSafeInteger(value)) {
+      if (isSafeInteger(value)) {
         count = value;
       }
 
@@ -159,7 +162,7 @@ Object.defineProperties(Enum, {
    *
    * @param {string} typeName - The name of the enum collection.
    * @param {Array} properties - Initialiser array.
-   * @param {Object} options - Options to determine behaviour.
+   * @param {object} options - Options to determine behaviour.
    * @returns {Function} The enumeration collection.
    * @example
    * var Enum = require('enumify-x');
@@ -319,7 +322,7 @@ Object.defineProperties(Enum, {
    * };
    *
    * var subject3 = Enum.create('subject3', ['RED'], opts3);
-   * subject3.RED.description()) === 'Description: subject3.RED'; // true
+   * subject3.RED.description() === 'Description: subject3.RED'; // true
    */
   create: {
     value: function create(typeName, properties, options) {
@@ -333,8 +336,8 @@ Object.defineProperties(Enum, {
       let CstmCtr;
       let data;
 
-      // eslint-disable-next-line no-unused-vars
-      const construct = function _construct(context, args) {
+      // noinspection JSUnusedLocalSymbols
+      const construct /* eslint-disable-line no-unused-vars */ = function _construct(context, args) {
         const argsArr = [...args];
 
         if (data) {
@@ -350,7 +353,7 @@ Object.defineProperties(Enum, {
         return context;
       };
 
-      // eslint-disable-next-line no-eval
+      /* eslint-disable-next-line no-eval */
       CstmCtr = eval(`(0,function ${ctrName}(value){return construct(this,arguments)})`);
 
       let asString;
@@ -385,25 +388,30 @@ Object.defineProperties(Enum, {
         },
       });
 
-      Object.defineProperty(CstmCtr, Symbol.iterator, {
-        value: function iterator() {
-          const iter = data.keys[Symbol.iterator]();
-          const $next = function next() {
-            const nxt = iter.next();
+      /* eslint-disable-next-line compat/compat */
+      if (typeof Symbol === 'function' && typeof Symbol('') === 'symbol') {
+        /* eslint-disable-next-line compat/compat */
+        Object.defineProperty(CstmCtr, Symbol.iterator, {
+          value: function iterator() {
+            /* eslint-disable-next-line compat/compat */
+            const iter = data.keys[Symbol.iterator]();
+            const $next = function next() {
+              const nxt = iter.next();
 
-            return nxt.done
-              ? nxt
-              : {
-                  done: false,
-                  value: data.names.get(nxt.value),
-                };
-          };
+              return nxt.done
+                ? nxt
+                : {
+                    done: false,
+                    value: data.names.get(nxt.value),
+                  };
+            };
 
-          return {
-            next: $next,
-          };
-        },
-      });
+            return {
+              next: $next,
+            };
+          },
+        });
+      }
 
       CstmCtr.prototype = Object.create(Enum.prototype);
       Object.defineProperties(CstmCtr.prototype, {

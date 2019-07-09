@@ -21,19 +21,21 @@
 <a name="module_enumify-x"></a>
 
 ## enumify-x
+
 Enumerated type library.
 
 **Author**: Xotic750 <Xotic750@gmail.com>  
-**License**: [MIT](&lt;https://opensource.org/licenses/MIT&gt;)  
-**Copyright**: Xotic750  
+**License**: [MIT](<https://opensource.org/licenses/MIT>)  
+**Copyright**: Xotic750
 
-* [enumify-x](#module_enumify-x)
-    * [`module.exports`](#exp_module_enumify-x--module.exports) ⇒ <code>Object</code> ⏏
-        * [`~create`](#module_enumify-x--module.exports..create) ⇒ <code>function</code>
+- [enumify-x](#module_enumify-x)
+  - [`module.exports`](#exp_module_enumify-x--module.exports) ⇒ <code>Object</code> ⏏
+    - [`~create`](#module_enumify-x--module.exports..create) ⇒ <code>function</code>
 
 <a name="exp_module_enumify-x--module.exports"></a>
 
 ### `module.exports` ⇒ <code>Object</code> ⏏
+
 An enumeration is a set of symbolic names (members) bound to unique, constant
 values. Within an enumeration, the members can be compared by identity, and
 the enumeration itself can be iterated over.
@@ -43,28 +45,30 @@ Create an enum name/value. Not usually called directly.
 
 **Kind**: Exported member  
 **Returns**: <code>Object</code> - The enum.  
-**See**: [https://docs.python.org/3/library/enum.html](https://docs.python.org/3/library/enum.html)  
+**See**: [https://docs.python.org/3/library/enum.html](https://docs.python.org/3/library/enum.html)
 
-| Param | Type | Description |
-| --- | --- | --- |
-| name | <code>string</code> | The name of the enum. |
-|  | <code>\*</code> | value The value of the enum. |
+| Param | Type                | Description                  |
+| ----- | ------------------- | ---------------------------- |
+| name  | <code>string</code> | The name of the enum.        |
+|       | <code>\*</code>     | value The value of the enum. |
 
 <a name="module_enumify-x--module.exports..create"></a>
 
 #### `module.exports~create` ⇒ <code>function</code>
+
 Creates an enumeration collection. Primary method.
 
 **Kind**: inner property of [<code>module.exports</code>](#exp_module_enumify-x--module.exports)  
-**Returns**: <code>function</code> - The enumeration collection.  
+**Returns**: <code>function</code> - The enumeration collection.
 
-| Param | Type | Description |
-| --- | --- | --- |
-| typeName | <code>string</code> | The name of the enum collection. |
-| properties | <code>Array</code> | Initialiser array. |
-| options | <code>Object</code> | Options to determine behaviour. |
+| Param      | Type                | Description                      |
+| ---------- | ------------------- | -------------------------------- |
+| typeName   | <code>string</code> | The name of the enum collection. |
+| properties | <code>Array</code>  | Initialiser array.               |
+| options    | <code>Object</code> | Options to determine behaviour.  |
 
-**Example**  
+**Example**
+
 ```js
 var Enum = require('enumify-x');
 

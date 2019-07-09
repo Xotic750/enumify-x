@@ -2,5 +2,6 @@
 !jest.config.js
 dist/
 node_modules/
-__tests__/
+__tests__/coverage/
+__tests__/__snapshots__/
 package-lock.json
