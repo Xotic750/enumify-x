@@ -25,7 +25,7 @@
 Enumerated type library.
 
 **Author**: Xotic750 <Xotic750@gmail.com>  
-**License**: [MIT](<https://opensource.org/licenses/MIT>)  
+**License**: [MIT](https://opensource.org/licenses/MIT)  
 **Copyright**: Xotic750
 
 - [enumify-x](#module_enumify-x)
@@ -70,7 +70,7 @@ Creates an enumeration collection. Primary method.
 **Example**
 
 ```js
-var Enum = require('enumify-x');
+import Enum from 'enumify-x';
 
 // Creating an Enum
 // Example allows duplicate values, known as aliases.
@@ -78,109 +78,108 @@ var Enum = require('enumify-x');
 // unimportant you may use auto instances and an appropriate value will be
 // chosen for you. Care must be taken if you mix auto with other values.
 //
-// The class Color is an enumeration (or enum)
-// The attributes Color.RED, Color.GREEN, etc., are enumeration members
+// The class color is an enumeration (or enum)
+// The attributes color.RED, color.GREEN, etc., are enumeration members
 // (or enum members) and are functionally constants.
-// The enum members have names and values (the name of Color.RED is RED,
-// value of Color.BLUE is 10, etc.)
-var Color = Enum.create('Color', [
+// The enum members have names and values (the name of color.RED is RED,
+// value of color.BLUE is 10, etc.)
+const color = Enum.create('color', [
   'RED', // auto assign value, starting 0
   'YELLOW', // auto assign value, will be 1
-  { name: 'BLUE', value: 10 },
+  {name: 'BLUE', value: 10},
   'PINK', // auto assign value, will be 11
-  { name: 'BLACK', value: 1 } // This is an alias for YELLOW
+  {name: 'BLACK', value: 1}, // This is an alias for YELLOW
 ]);
 
-Color.YELLOW; // { name: 'YELLOW', value: 1 }
-Color.BLUE.name; // 'BLUE'
-Color.BLUE.value; // 10
-Color.BLACK === Color.YELLOW; // true
+console.log(color.YELLOW); // { name: 'YELLOW', value: 1 }
+console.log(color.BLUE.name); // 'BLUE'
+console.log(color.BLUE.value); // 10
+console.log(color.BLACK === color.YELLOW); // true
 // Enumeration members have human readable string representations.
-Color.PINK.toString(); // 'Color.PINK'
+color.PINK.toString(); // 'color.PINK'
 // Enums also have a human readable string representations.
-Color.toString(); // 'Color { "RED", "YELLOW", "BLUE", "PINK", "BLACK" }'
+color.toString(); // 'color { "RED", "YELLOW", "BLUE", "PINK", "BLACK" }'
 // The type of an enumeration member is the enumeration it belongs to.
-Color.PINK instanceof Color; // true
+console.log(color.PINK instanceof color); // true
 // You can access by value too.
-Color(10); // Color.BLUE
+console.log(color(10)); // color.BLUE
 
 // Enumeration members are hashable, so they can be used as property names.
-var apples = {};
-apples[Color.RED] = 'Red Delicious';
-apples[Color.YELLOW] = 'Golden Delicious'
-apples; // {Color.RED: 'Red Delicious', Color.YELLOW: 'Golden Delicious'}
+const apples = {};
+apples[color.RED] = 'Red Delicious';
+apples[color.YELLOW] = 'Golden Delicious';
+console.log(apples); // {color.RED: 'Red Delicious', color.YELLOW: 'Golden Delicious'}
+
+// No aliases are allowed in this example.
+const opts = {
+  unique: true,
+};
 
 // Having two enum members with the same name is invalid
-var Fail = Enum.create('Fail', [
-  'RED',
-  'RED',
-], opts);
+Enum.create('fail', ['RED', 'RED'], opts);
 
 // However, two enum members are allowed to have the same value. Given two
 // members A and B with the same value (and A defined first), B is an alias
 // to A. By-value lookup of the value of A and B will return A. By-name
-// lookup of B will also return A. as seen in the definition of Color.
+// lookup of B will also return A. as seen in the definition of color.
 
-// No aliases are allowed in this example.
-var opts = {
-  unique: true
-};
-
-var Color1 = Enum.create('Color1', [
-  'RED',
-  'YELLOW',
-], opts);
+const color1 = Enum.create('color1', ['RED', 'YELLOW'], opts);
 
 // Depending on the value types used, enumerations are serialisable.
-JSON.stringify(Color1); // '[{"name":"RED","value":0},{"name":"YELLOW","value":1}]'
+JSON.stringify(color1); // '[{"name":"RED","value":0},{"name":"YELLOW","value":1}]'
 
 // Enumerations support iteration, in definition order.
 // The forEach() method executes a provided function once per each
 // name/value pair in the Enum object, in insertion order.
 // Iterating over the members of an enum does not provide the aliases.
-Color1.forEach(function (enumMember) {
-  console.log(enumMember.name, enumMember.value)
-}, thisArg);
+color1.forEach((enumMember) => {
+  console.log(enumMember.name, enumMember.value);
+});
 
 // Where supported, for..of can be used.
 // Iterating over the members of an enum does not provide the aliases.
-for (const { name, value } of Color1) {
+for (const {name, value} of color1) {
   console.log(name, value);
 }
 
 // Otherwise, standard iterator pattern.
 // Iterating over the members of an enum does not provide the aliases.
-var iter = Color1[Symbol.iterator]();
-var next = iter.next();
+const iter = color1[Symbol.iterator]();
+let next = iter.next();
 while (next.done === false) {
-  var enumMember = next.value;
-  console.log(enumMember.name, enumMember.value)
+  const enumMember = next.value;
+  console.log(enumMember.name, enumMember.value);
   next = iter.next();
 }
 
 // To iterate all items, including aliases.
-var allenumMembers = Color1.toJSON();
-allenumMembers.forEach(function(enumMember) {
-   console.log(enumMember.name, enumMember.value);
+const allenumMembers = color1.toJSON();
+allenumMembers.forEach((enumMember) => {
+  console.log(enumMember.name, enumMember.value);
 });
 
-// Lookups can be perfomed on the value and not just the name.
-Color1(0) === Color1.RED; // true
-Color1(1) === Color1['YELLOW']; // true
+// Lookups can be performed on the value and not just the name.
+console.log(color1(0) === color1.RED); // true
+console.log(color1(1) === color1.YELLOW); // true
 
 // Values can be anything, but names must be a string.
-var anotherEnum = Enum.create('anotherEnum', [
-  { name: 'OBJECT', value: {} },
-  { name: 'ARRAY', value: [] },
-  { name: 'FUNCTION', value: function () {} }
+const anotherEnum = Enum.create('anotherEnum', [
+  {name: 'OBJECT', value: {}},
+  {name: 'ARRAY', value: []},
+  {
+    name: 'FUNCTION',
+    value() {
+      return undefined;
+    },
+  },
 ]);
 
 // Enums can be cloned
-var cloneEnum = Enum.create('cloneEnum', anotherEnum);
-cloneEnum === anotherEnum; // false
-cloneEnum.OBJECT === anotherEnum.OBJECT; // false
-cloneEnum.OBJECT.name === anotherEnum.OBJECT.name; // true
-cloneEnum.OBJECT.value === anotherEnum.OBJECT.value; // true
+const cloneEnum = Enum.create('cloneEnum', anotherEnum);
+console.log(cloneEnum === anotherEnum); // false
+console.log(cloneEnum.OBJECT === anotherEnum.OBJECT); // false
+console.log(cloneEnum.OBJECT.name === anotherEnum.OBJECT.name); // true
+console.log(cloneEnum.OBJECT.value === anotherEnum.OBJECT.value); // true
 
 // Options
 // unique: {boolean} - whether aliases are allowed.
@@ -190,42 +189,42 @@ cloneEnum.OBJECT.value === anotherEnum.OBJECT.value; // true
 
 // ------------------------------------------------------
 
-var opts1 = {
-  auto: function () {
+const opts1 = {
+  auto() {
     return {
-      next: function (name, value) {
+      next(name /* , value */) {
         return name;
-      }
+      },
     };
-  }
+  },
 };
 
-var subject1 = Enum.create('subject1', ['RED'], opts1);
-subject1.RED; // { name: 'RED', value: 'RED'}
+const subject1 = Enum.create('subject1', ['RED'], opts1);
+console.log(subject1.RED); // { name: 'RED', value: 'RED'}
 
 // ------------------------------------------------------
 
-var opts2 = {
+const opts2 = {
   classMethods: {
-    favourite: function () {
+    favourite() {
       return this.RED;
-    }
-  }
+    },
+  },
 };
 
-var subject2 = Enum.create('subject2', ['RED'], opts2);
-subject2.favourite() === subject2.RED; // true
+const subject2 = Enum.create('subject2', ['RED'], opts2);
+console.log(subject2.favourite() === subject2.RED); // true
 
 // ------------------------------------------------------
 
-var opts3 = {
+const opts3 = {
   instanceMethods: {
-    description: function () {
-      return 'Description: ' + this.toString();
-    }
-  }
+    description() {
+      return `Description: ${this.toString()}`;
+    },
+  },
 };
 
-var subject3 = Enum.create('subject3', ['RED'], opts3);
-subject3.RED.description()) === 'Description: subject3.RED'; // true
+const subject3 = Enum.create('subject3', ['RED'], opts3);
+console.log(subject3.RED.description() === 'Description: subject3.RED'); // true
 ```

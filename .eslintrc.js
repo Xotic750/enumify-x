@@ -50,6 +50,7 @@ module.exports = {
    * @see {@link https://eslint.org/docs/user-guide/configuring#configuring-rules|rules
    */
   rules: {
+    'jsdoc/check-examples': 'off',
     'jsdoc/no-undefined-types': ['error', {definedTypes: ['Readonly', 'ReadonlyArray']}],
   },
 
