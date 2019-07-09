@@ -1,13 +1,13 @@
 /*!
 {
   "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-09T22:59:31.622Z",
+  "date": "2019-07-09T23:06:23.536Z",
   "describe": "",
   "description": "Enumerated type library.",
   "file": "enumify-x.js",
   "hash": "c9866740ff6ce1faff07",
   "license": "MIT",
-  "version": "2.0.7"
+  "version": "2.0.8"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
