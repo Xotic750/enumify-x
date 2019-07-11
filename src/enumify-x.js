@@ -388,7 +388,7 @@ Object.defineProperties(Enum, {
       });
 
       /* eslint-disable-next-line compat/compat */
-      if (typeof Symbol === 'function' && typeof Symbol('') === 'symbol') {
+      if (typeof Symbol === 'function' && isSymbol(Symbol(''))) {
         /* eslint-disable-next-line compat/compat */
         Object.defineProperty(CstmCtr, Symbol.iterator, {
           value: function iterator() {

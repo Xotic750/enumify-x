@@ -5,14 +5,15 @@
  */
 
 const path = require('path');
+const childProcess = require('child_process');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
-const childProcess = require('child_process');
 const TerserPlugin = require('terser-webpack-plugin');
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const eslintFriendlyFormatter = require('eslint-friendly-formatter');
-const stylish = require('eslint/lib/formatters/stylish');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const camelCase = require('lodash/camelCase');
+const PACKAGE = require('./package.json');
 
 const getGlobal = function() {
   'use strict';
@@ -32,16 +33,9 @@ const getGlobal = function() {
   return Function('return this')();
 };
 
-const filename = 'enumify-x';
-const library = 'EnumifyX';
+const filename = PACKAGE.name;
+const library = camelCase(filename);
 const dist = path.resolve(__dirname, 'dist');
-
-/**
- * Whether eslint should use the friendly formatter.
- *
- * @type {boolean}
- */
-const USE_FRIENDLY_FORMATTER = false;
 
 /**
  * The NODE_ENV environment variable.
@@ -65,26 +59,20 @@ const PRODUCTION = 'production';
 const DEVELOPMENT = 'development';
 
 /**
- * The default exclude regex.
+ * The default include paths.
  *
- * @type {RegExp}
+ * @type {string}
  */
-const DEFAULT_EXCLUDE_RX = /node_modules/;
+const DEFAULT_INCLUDE = [path.resolve(__dirname, 'src'), path.resolve(__dirname, '__tests__')];
 
 /**
  * Allows you to pass in as many environment variables as you like using --env.
  * See {@link http://webpack.js.org/guides/environment-variables}.
  *
  * @param {!object} [env={}] - The env object.
+ * @returns {undefined} Default.
  */
 module.exports = function generateConfig(env) {
-  /**
-   * The JSON content of `package.json`.
-   *
-   * @type {!object}
-   */
-  const PACKAGE = require('./package.json');
-
   /**
    * The reference created bu git describe --dirty`.
    *
@@ -130,7 +118,7 @@ module.exports = function generateConfig(env) {
      * @type {Array.<string>}
      * @see {@link https://webpack.js.org/concepts/entry-points/}
      */
-    entry: './src/index.js',
+    entry: PACKAGE.module,
 
     mode: NODE_ENV === PRODUCTION ? PRODUCTION : DEVELOPMENT,
 
@@ -169,14 +157,14 @@ module.exports = function generateConfig(env) {
          */
         {
           enforce: 'pre',
-          exclude: DEFAULT_EXCLUDE_RX,
+          include: DEFAULT_INCLUDE,
           loader: 'eslint-loader',
           options: {
             emitError: true,
             emitWarning: false,
             failOnError: true,
             failOnWarning: false,
-            formatter: USE_FRIENDLY_FORMATTER ? eslintFriendlyFormatter : stylish,
+            formatter: eslintFriendlyFormatter,
             quiet: true,
           },
           test: /\.(js|json)$/,
@@ -188,7 +176,7 @@ module.exports = function generateConfig(env) {
          * @see {@link https://webpack.js.org/loaders/babel-loader/}
          */
         {
-          exclude: DEFAULT_EXCLUDE_RX,
+          include: DEFAULT_INCLUDE,
           loader: 'babel-loader',
           test: /\.js$/,
         },
@@ -256,19 +244,20 @@ module.exports = function generateConfig(env) {
        * Adds a banner to the top of each generated chunk.
        *
        * @type {!object}
-       * @see {@link https://webpack.js.org/plugins/banner-`plugin/}
+       * @see {@link https://webpack.js.org/plugins/banner-plugin/}
        */
       new webpack.BannerPlugin({
         banner: `/*!\n${JSON.stringify(
           {
-            copywrite: `${PACKAGE.copyright}`,
-            date: `${NOW}`,
-            describe: `${DESCRIBE}`,
-            description: `${PACKAGE.description}`,
+            author: PACKAGE.author.name,
+            copywrite: PACKAGE.copyright,
+            date: NOW,
+            describe: DESCRIBE,
+            description: PACKAGE.description,
             file: '[file]',
             hash: '[hash]',
-            license: `${PACKAGE.license}`,
-            version: `${PACKAGE.version}`,
+            license: PACKAGE.license,
+            version: PACKAGE.version,
           },
           null,
           2,

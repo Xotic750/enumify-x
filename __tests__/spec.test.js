@@ -1,4 +1,4 @@
-import RAW from 'src/index';
+import RAW from 'src/enumify-x';
 import WEB from 'dist/enumify-x';
 import MIN from 'dist/enumify-x.min';
 
