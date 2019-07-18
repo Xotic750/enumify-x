@@ -16,7 +16,6 @@ const t = function test1() {
 const hasFunctionNames = t.name === 'test1';
 const itHasFunctionNames = hasFunctionNames ? it : xit;
 
-/* eslint-disable-next-line compat/compat */
 const hasSymbolSupport = typeof Symbol === 'function' && typeof Symbol('') === 'symbol';
 const itHasSymbolSupport = hasSymbolSupport ? it : xit;
 
@@ -172,7 +171,6 @@ methods.forEach(({method, description}) => {
     itHasSymbolSupport('should not throw if name is Symbol', () => {
       expect.assertions(1);
 
-      /* eslint-disable-next-line compat/compat */
       const subject = Enum.create(subjectName, [Symbol('symbol')]);
       expect(typeof subject).toStrictEqual('function');
     });
@@ -236,7 +234,6 @@ methods.forEach(({method, description}) => {
       expect.assertions(1);
 
       expect(() => {
-        /* eslint-disable-next-line compat/compat */
         Enum.create(Symbol(''), subjectProps);
       }).toThrowErrorMatchingSnapshot();
     });
