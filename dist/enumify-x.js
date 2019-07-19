@@ -2,13 +2,13 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-18T23:51:04.009Z",
+  "date": "2019-07-19T23:16:13.873Z",
   "describe": "",
   "description": "Enumerated type library.",
   "file": "enumify-x.js",
-  "hash": "669c8b55f02ccb71cde7",
+  "hash": "e1844be4f6716cdda2f1",
   "license": "MIT",
-  "version": "2.0.10"
+  "version": "2.0.11"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -1773,7 +1773,7 @@ var hop = {}.hasOwnProperty;
  *
  * @param {!object} object - The object to test.
  * @throws {TypeError} If object is null or undefined.
- * @param {string|Symbol} property - The name or Symbol of the property to test.
+ * @param {string|number|Symbol} property - The name or Symbol of the property to test.
  * @returns {boolean} `true` if the property is set on `object`, else `false`.
  */
 
