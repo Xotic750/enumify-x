@@ -2,13 +2,13 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-19T23:16:13.873Z",
+  "date": "2019-07-20T20:09:45.694Z",
   "describe": "",
   "description": "Enumerated type library.",
   "file": "enumify-x.js",
-  "hash": "e1844be4f6716cdda2f1",
+  "hash": "dae7d572c98476827995",
   "license": "MIT",
-  "version": "2.0.11"
+  "version": "2.0.12"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -4578,7 +4578,9 @@ if (object_create_x_esm_isWorking) {
     var getEmptyViaActiveX = function _getEmptyViaActiveX() {
       /* eslint-disable-next-line no-undef */
       var xDoc = new ActiveXObject('htmlfile');
-      xDoc.write('<script></script>');
+      /* eslint-disable-next-line no-useless-escape,prettier/prettier */
+
+      xDoc.write('<script><\/script>');
       xDoc.close(); // noinspection JSUnresolvedVariable
 
       var empty = xDoc.parentWindow.Object.prototype;

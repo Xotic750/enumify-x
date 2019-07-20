@@ -1,6 +1,6 @@
 {
   "name": "enumify-x",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "Enumerated type library.",
   "homepage": "https://github.com/Xotic750/enumify-x.git",
   "author": {
@@ -48,7 +48,7 @@
     "url": "https://github.com/Xotic750/enumify-x/issues"
   },
   "dependencies": {
-    "collections-x": "^3.0.3",
+    "collections-x": "^3.0.4",
     "is-array-like-x": "^2.0.9",
     "is-object-like-x": "^2.0.16",
     "is-safe-integer-x": "^2.0.14",
