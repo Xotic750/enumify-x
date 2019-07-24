@@ -1,6 +1,6 @@
 {
   "name": "enumify-x",
-  "version": "2.0.15",
+  "version": "2.0.16",
   "description": "Enumerated type library.",
   "homepage": "https://github.com/Xotic750/enumify-x.git",
   "author": {
@@ -21,6 +21,7 @@
   ],
   "module": "dist/enumify-x.esm.js",
   "main": "dist/enumify-x.js",
+  "jsdelivr": "dist/enumify-x.min.js",
   "scripts": {
     "build:esm": "mkdirp dist && babel -s true --env-name esm src/enumify-x.js -o dist/enumify-x.esm.js",
     "build:base": "webpack --bail --progress --profile --colors",
@@ -48,10 +49,10 @@
     "url": "https://github.com/Xotic750/enumify-x/issues"
   },
   "dependencies": {
-    "collections-x": "^3.0.7",
-    "is-array-like-x": "^2.0.12",
-    "is-object-like-x": "^2.0.19",
-    "is-safe-integer-x": "^2.0.17",
+    "collections-x": "^3.0.8",
+    "is-array-like-x": "^2.0.13",
+    "is-object-like-x": "^2.0.21",
+    "is-safe-integer-x": "^2.0.19",
     "is-symbol": "^1.0.2",
     "is-var-name": "^2.0.0"
   },
@@ -91,7 +92,7 @@
     "eslint-plugin-html": "^6.0.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jest": "^22.13.6",
-    "eslint-plugin-jsdoc": "^15.7.1",
+    "eslint-plugin-jsdoc": "^15.7.2",
     "eslint-plugin-json": "^1.4.0",
     "eslint-plugin-lodash": "^5.1.0",
     "eslint-plugin-no-use-extend-native": "^0.4.1",
