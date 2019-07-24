@@ -2,13 +2,13 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-22T13:45:01.505Z",
+  "date": "2019-07-24T01:37:01.610Z",
   "describe": "",
   "description": "Enumerated type library.",
   "file": "enumify-x.js",
-  "hash": "dae7d572c98476827995",
+  "hash": "4f06dfbc5ba355b4cadd",
   "license": "MIT",
-  "version": "2.0.14"
+  "version": "2.0.15"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -185,63 +185,49 @@ var toBoolean = function toBoolean(value) {
 
 
 // EXTERNAL MODULE: ./node_modules/to-string-tag-x/dist/to-string-tag-x.esm.js
-var to_string_tag_x_esm = __webpack_require__(16);
+var to_string_tag_x_esm = __webpack_require__(14);
 
 // EXTERNAL MODULE: ./node_modules/has-to-string-tag-x/dist/has-to-string-tag-x.esm.js
-var has_to_string_tag_x_esm = __webpack_require__(23);
+var has_to_string_tag_x_esm = __webpack_require__(19);
 
 // EXTERNAL MODULE: ./node_modules/is-primitive/index.js
 var is_primitive = __webpack_require__(2);
 var is_primitive_default = /*#__PURE__*/__webpack_require__.n(is_primitive);
 
 // EXTERNAL MODULE: ./node_modules/trim-x/dist/trim-x.esm.js + 1 modules
-var trim_x_esm = __webpack_require__(19);
+var trim_x_esm = __webpack_require__(25);
 
 // EXTERNAL MODULE: ./node_modules/white-space-x/dist/white-space-x.esm.js
-var white_space_x_esm = __webpack_require__(12);
+var white_space_x_esm = __webpack_require__(17);
 
 // CONCATENATED MODULE: ./node_modules/normalize-space-x/dist/normalize-space-x.esm.js
 
 
 var SPACE = ' ';
 var RegExpCtr = /none/.constructor;
-var reNormalize2016 = new RegExpCtr("[".concat(white_space_x_esm["b" /* string2016 */], "]+"), 'g');
 var reNormalize2018 = new RegExpCtr("[".concat(white_space_x_esm["a" /* default */], "]+"), 'g');
 var replace = SPACE.replace;
 /**
  * This method strips leading and trailing white-space from a string,
  * replaces sequences of whitespace characters by a single space,
- * and returns the resulting string. (ES2016).
- *
- * @param {string} [string] - The string to be normalized.
- * @throws {TypeError} If string is null or undefined or not coercible.
- * @returns {string} The normalized string.
- */
-
-function normalizeSpace2016(string) {
-  return replace.call(Object(trim_x_esm["b" /* trim2016 */])(string), reNormalize2016, SPACE);
-}
-/**
- * This method strips leading and trailing white-space from a string,
- * replaces sequences of whitespace characters by a single space,
- * and returns the resulting string. (ES2018).
+ * and returns the resulting string. (ES2019).
  *
  * @param {string} [string] - The string to be normalized.
  * @throws {TypeError} If string is null or undefined or not coercible.
  */
 
-var normalize_space_x_esm_normalizeSpace2018 = function normalizeSpace2018(string) {
+var normalize_space_x_esm_normalizeSpace = function normalizeSpace(string) {
   return replace.call(Object(trim_x_esm["a" /* default */])(string), reNormalize2018, SPACE);
 };
 
-/* harmony default export */ var normalize_space_x_esm = (normalize_space_x_esm_normalizeSpace2018);
+/* harmony default export */ var normalize_space_x_esm = (normalize_space_x_esm_normalizeSpace);
 
 
 // EXTERNAL MODULE: ./node_modules/to-string-x/dist/to-string-x.esm.js
-var to_string_x_esm = __webpack_require__(10);
+var to_string_x_esm = __webpack_require__(12);
 
 // EXTERNAL MODULE: ./node_modules/require-coercible-to-string-x/dist/require-coercible-to-string-x.esm.js
-var require_coercible_to_string_x_esm = __webpack_require__(14);
+var require_coercible_to_string_x_esm = __webpack_require__(15);
 
 // CONCATENATED MODULE: ./node_modules/replace-comments-x/dist/replace-comments-x.esm.js
 
@@ -534,14 +520,14 @@ var to_number_x_esm = __webpack_require__(9);
 var is_nan_x_esm = __webpack_require__(7);
 
 // EXTERNAL MODULE: ./node_modules/is-finite-x/dist/is-finite-x.esm.js + 1 modules
-var is_finite_x_esm = __webpack_require__(21);
+var is_finite_x_esm = __webpack_require__(24);
 
 // CONCATENATED MODULE: ./node_modules/math-sign-x/dist/math-sign-x.esm.js
 
 
 /**
  * This method returns the sign of a number, indicating whether the number is positive,
- * negative or zero. (ES2016).
+ * negative or zero. (ES2019).
  *
  * @param {*} x - A number.
  * @returns {number} A number representing the sign of the given argument. If the argument
@@ -549,26 +535,7 @@ var is_finite_x_esm = __webpack_require__(21);
  * return 1, -1, 0 or -0 respectively. Otherwise, NaN is returned.
  */
 
-function sign2016(x) {
-  var n = Object(to_number_x_esm["b" /* toNumber2016 */])(x);
-
-  if (n === 0 || Object(is_nan_x_esm["a" /* default */])(n)) {
-    return n;
-  }
-
-  return n > 0 ? 1 : -1;
-}
-/**
- * This method returns the sign of a number, indicating whether the number is positive,
- * negative or zero. (ES2018).
- *
- * @param {*} x - A number.
- * @returns {number} A number representing the sign of the given argument. If the argument
- * is a positive number, negative number, positive zero or negative zero, the function will
- * return 1, -1, 0 or -0 respectively. Otherwise, NaN is returned.
- */
-
-var math_sign_x_esm_sign2018 = function sign2018(x) {
+var math_sign_x_esm_sign = function sign(x) {
   var n = Object(to_number_x_esm["a" /* default */])(x);
 
   if (n === 0 || Object(is_nan_x_esm["a" /* default */])(n)) {
@@ -578,11 +545,10 @@ var math_sign_x_esm_sign2018 = function sign2018(x) {
   return n > 0 ? 1 : -1;
 };
 
-/* harmony default export */ var math_sign_x_esm = (math_sign_x_esm_sign2018);
+/* harmony default export */ var math_sign_x_esm = (math_sign_x_esm_sign);
 
 
 // CONCATENATED MODULE: ./node_modules/to-integer-x/dist/to-integer-x.esm.js
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return toInteger2016; });
 
 
 
@@ -590,33 +556,13 @@ var math_sign_x_esm_sign2018 = function sign2018(x) {
 var abs = Math.abs,
     floor = Math.floor;
 /**
- * Converts `value` to an integer. (ES2016).
+ * Converts `value` to an integer. (ES2019).
  *
  * @param {*} value - The value to convert.
  * @returns {number} Returns the converted integer.
  */
 
-function toInteger2016(value) {
-  var number = Object(to_number_x_esm["b" /* toNumber2016 */])(value);
-
-  if (Object(is_nan_x_esm["a" /* default */])(number)) {
-    return 0;
-  }
-
-  if (number === 0 || Object(is_finite_x_esm["a" /* default */])(number) === false) {
-    return number;
-  }
-
-  return sign2016(number) * floor(abs(number));
-}
-/**
- * Converts `value` to an integer. (ES2018).
- *
- * @param {*} value - The value to convert.
- * @returns {number} Returns the converted integer.
- */
-
-var to_integer_x_esm_toInteger2018 = function toInteger2018(value) {
+var to_integer_x_esm_toInteger = function toInteger(value) {
   var number = Object(to_number_x_esm["a" /* default */])(value);
 
   if (Object(is_nan_x_esm["a" /* default */])(number)) {
@@ -630,7 +576,7 @@ var to_integer_x_esm_toInteger2018 = function toInteger2018(value) {
   return math_sign_x_esm(number) * floor(abs(number));
 };
 
-/* harmony default export */ var to_integer_x_esm = __webpack_exports__["a"] = (to_integer_x_esm_toInteger2018);
+/* harmony default export */ var to_integer_x_esm = __webpack_exports__["a"] = (to_integer_x_esm_toInteger);
 
 
 
@@ -645,10 +591,10 @@ var is_symbol = __webpack_require__(3);
 var is_symbol_default = /*#__PURE__*/__webpack_require__.n(is_symbol);
 
 // EXTERNAL MODULE: ./node_modules/to-primitive-x/dist/to-primitive-x.esm.js
-var to_primitive_x_esm = __webpack_require__(20);
+var to_primitive_x_esm = __webpack_require__(21);
 
 // EXTERNAL MODULE: ./node_modules/trim-x/dist/trim-x.esm.js + 1 modules
-var trim_x_esm = __webpack_require__(19);
+var trim_x_esm = __webpack_require__(25);
 
 // CONCATENATED MODULE: ./node_modules/nan-x/dist/nan-x.esm.js
 /**
@@ -660,10 +606,10 @@ var trim_x_esm = __webpack_require__(19);
 
 
 // EXTERNAL MODULE: ./node_modules/to-string-x/dist/to-string-x.esm.js
-var to_string_x_esm = __webpack_require__(10);
+var to_string_x_esm = __webpack_require__(12);
 
 // EXTERNAL MODULE: ./node_modules/trim-left-x/dist/trim-left-x.esm.js
-var trim_left_x_esm = __webpack_require__(18);
+var trim_left_x_esm = __webpack_require__(20);
 
 // CONCATENATED MODULE: ./node_modules/parse-int-x/dist/parse-int-x.esm.js
 
@@ -680,7 +626,7 @@ var hexRegex = /^[-+]?0[xX]/;
 var test = hexRegex.test;
 /**
  * This method parses a string argument and returns an integer of the specified
- * radix (the base in mathematical numeral systems). (ES2016).
+ * radix (the base in mathematical numeral systems). (ES2019).
  *
  * @param {string} [string] - The value to parse. If the string argument is not a
  *  string, then it is converted to a string (using the ToString abstract
@@ -696,29 +642,7 @@ var test = hexRegex.test;
  *  character cannot be converted to a number, NaN is returned.
  */
 
-function parseInt2016(string, radix) {
-  var str = Object(trim_left_x_esm["b" /* trimLeft2016 */])(Object(to_string_x_esm["a" /* default */])(string));
-  return nativeParseInt(str, castNumber(radix) || (test.call(hexRegex, str) ? 16 : 10));
-}
-/**
- * This method parses a string argument and returns an integer of the specified
- * radix (the base in mathematical numeral systems). (ES2018).
- *
- * @param {string} [string] - The value to parse. If the string argument is not a
- *  string, then it is converted to a string (using the ToString abstract
- *  operation). Leading whitespace in the string argument is ignored.
- * @param {number} [radix] - An integer between 2 and 36 that represents the radix
- *  (the base in mathematical numeral systems) of the above mentioned string.
- *  Specify 10 for the decimal numeral system commonly used by humans. Always
- *  specify this parameter to eliminate reader confusion and to guarantee
- *  predictable behavior. Different implementations produce different results
- *  when a radix is not specified, usually defaulting the value to 10.
- * @throws {TypeError} If target is a Symbol or is not coercible.
- * @returns {number} An integer number parsed from the given string. If the first
- *  character cannot be converted to a number, NaN is returned.
- */
-
-var parse_int_x_esm_parseInt2018 = function parseInt2018(string, radix) {
+var parse_int_x_esm_$parseInt = function $parseInt(string, radix) {
   var str = Object(trim_left_x_esm["a" /* default */])(Object(to_string_x_esm["a" /* default */])(string));
 
   if (charAt.call(str, 0) === "\u180E") {
@@ -728,11 +652,10 @@ var parse_int_x_esm_parseInt2018 = function parseInt2018(string, radix) {
   return nativeParseInt(str, castNumber(radix) || (test.call(hexRegex, str) ? 16 : 10));
 };
 
-/* harmony default export */ var parse_int_x_esm = (parse_int_x_esm_parseInt2018);
+/* harmony default export */ var parse_int_x_esm = (parse_int_x_esm_$parseInt);
 
 
 // CONCATENATED MODULE: ./node_modules/to-number-x/dist/to-number-x.esm.js
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return toNumber2016; });
 
 
 
@@ -762,12 +685,6 @@ var isOctal = function _isOctal(value) {
   return to_number_x_esm_test.call(octalRegex, value);
 };
 
-var nonWSregex2016 = new RegExpConstructor("[\x85\u200B\uFFFE]", 'g');
-
-var hasNonWS2016 = function _hasNonWS(value) {
-  return to_number_x_esm_test.call(nonWSregex2016, value);
-};
-
 var nonWSregex2018 = new RegExpConstructor("[\x85\u180E\u200B\uFFFE]", 'g');
 
 var hasNonWS2018 = function _hasNonWS(value) {
@@ -780,44 +697,6 @@ var isInvalidHexLiteral = function _isInvalidHexLiteral(value) {
   return to_number_x_esm_test.call(invalidHexLiteral, value);
 };
 /**
- * This method converts argument to a value of type Number. (ES2016).
- *
- * @param {*} [argument] - The argument to convert to a number.
- * @throws {TypeError} - If argument is a Symbol or not coercible.
- * @returns {*} The argument converted to a number.
- */
-
-
-function toNumber2016(argument) {
-  var value = Object(to_primitive_x_esm["a" /* default */])(argument, Number);
-
-  if (is_symbol_default()(value)) {
-    throw new TypeError(ERROR_MESSAGE);
-  }
-
-  if (typeof value === 'string') {
-    if (isBinary(value)) {
-      return toNumber2016(parseInt2016(pStrSlice.call(value, testCharsCount), binaryRadix));
-    }
-
-    if (isOctal(value)) {
-      return toNumber2016(parseInt2016(pStrSlice.call(value, testCharsCount), octalRadix));
-    }
-
-    if (hasNonWS2016(value) || isInvalidHexLiteral(value)) {
-      return nan_x_esm;
-    }
-
-    var trimmed = Object(trim_x_esm["b" /* trim2016 */])(value);
-
-    if (trimmed !== value) {
-      return toNumber2016(trimmed);
-    }
-  }
-
-  return to_number_x_esm_castNumber(value);
-}
-/**
  * This method converts argument to a value of type Number. (ES2018).
  *
  * @param {*} [argument] - The argument to convert to a number.
@@ -825,7 +704,8 @@ function toNumber2016(argument) {
  * @returns {*} The argument converted to a number.
  */
 
-var to_number_x_esm_toNumber2018 = function toNumber2018(argument) {
+
+var to_number_x_esm_toNumber = function toNumber(argument) {
   var value = Object(to_primitive_x_esm["a" /* default */])(argument, to_number_x_esm_castNumber);
 
   if (is_symbol_default()(value)) {
@@ -834,11 +714,11 @@ var to_number_x_esm_toNumber2018 = function toNumber2018(argument) {
 
   if (typeof value === 'string') {
     if (isBinary(value)) {
-      return toNumber2018(parse_int_x_esm(pStrSlice.call(value, testCharsCount), binaryRadix));
+      return toNumber(parse_int_x_esm(pStrSlice.call(value, testCharsCount), binaryRadix));
     }
 
     if (isOctal(value)) {
-      return toNumber2018(parse_int_x_esm(pStrSlice.call(value, testCharsCount), octalRadix));
+      return toNumber(parse_int_x_esm(pStrSlice.call(value, testCharsCount), octalRadix));
     }
 
     if (hasNonWS2018(value) || isInvalidHexLiteral(value)) {
@@ -848,19 +728,66 @@ var to_number_x_esm_toNumber2018 = function toNumber2018(argument) {
     var trimmed = Object(trim_x_esm["a" /* default */])(value);
 
     if (trimmed !== value) {
-      return toNumber2018(trimmed);
+      return toNumber(trimmed);
     }
   }
 
   return to_number_x_esm_castNumber(value);
 };
 
-/* harmony default export */ var to_number_x_esm = __webpack_exports__["a"] = (to_number_x_esm_toNumber2018);
+/* harmony default export */ var to_number_x_esm = __webpack_exports__["a"] = (to_number_x_esm_toNumber);
 
 
 
 /***/ }),
 /* 10 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var is_nil_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(11);
+/* harmony import */ var is_function_x__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
+/* harmony import */ var is_length_x__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(13);
+
+
+
+/**
+ * Checks if value is array-like. A value is considered array-like if it's
+ * not a function and has a `length` that's an integer greater than or
+ * equal to 0 and less than or equal to `Number.MAX_SAFE_INTEGER`.
+ *
+ * @param {*} value - The object to be tested.
+ */
+
+var isArrayLike = function isArrayLike(value) {
+  return Object(is_nil_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(value) === false && Object(is_function_x__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"])(value, true) === false && Object(is_length_x__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])(value.length);
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (isArrayLike);
+
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/**
+ * Checks if `value` is `null` or `undefined`.
+ *
+ * @param {*} [value] - The value to check.
+ * @returns {boolean} Returns `true` if `value` is nullish, else `false`.
+ */
+var isNil = function isNil(value) {
+  /* eslint-disable-next-line lodash/prefer-is-nil */
+  return value === null || typeof value === 'undefined';
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (isNil);
+
+
+
+/***/ }),
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -890,39 +817,117 @@ var ToString = function ToString(value) {
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var is_nil_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(13);
-/* harmony import */ var is_function_x__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
-/* harmony import */ var is_length_x__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(15);
-
-
+/* harmony import */ var is_safe_integer_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(23);
 
 /**
- * Checks if value is array-like. A value is considered array-like if it's
- * not a function and has a `length` that's an integer greater than or
- * equal to 0 and less than or equal to `Number.MAX_SAFE_INTEGER`.
+ * This method checks if `value` is a valid array-like length.
  *
- * @param {*} value - The object to be tested.
+ * @param {*} value - The value to check.
+ * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
  */
 
-var isArrayLike = function isArrayLike(value) {
-  return Object(is_nil_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(value) === false && Object(is_function_x__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"])(value, true) === false && Object(is_length_x__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"])(value.length);
+var isLength = function isLength(value) {
+  return Object(is_safe_integer_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(value) && value >= 0;
 };
 
-/* harmony default export */ __webpack_exports__["a"] = (isArrayLike);
+/* harmony default export */ __webpack_exports__["a"] = (isLength);
 
 
 
 /***/ }),
-/* 12 */
+/* 14 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var nativeObjectToString = {}.toString;
+/**
+ * The `toStringTag` method returns "[object type]", where type is the
+ * object type.
+ *
+ * @param {*} [value] - The object of which to get the object type string.
+ * @returns {string} The object type string.
+ */
+
+var toStringTag = function toStringTag(value) {
+  if (value === null) {
+    return '[object Null]';
+  }
+
+  if (typeof value === 'undefined') {
+    return '[object Undefined]';
+  }
+
+  return nativeObjectToString.call(value);
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (toStringTag);
+
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var require_object_coercible_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(16);
+/* harmony import */ var to_string_x__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(12);
+
+
+/**
+ * This method requires an argument is corecible then converts using ToString.
+ *
+ * @param {*} [value] - The value to converted to a string.
+ * @throws {TypeError} If value is null or undefined.
+ * @returns {string} The value as a string.
+ */
+
+var requireCoercibleToString = function requireCoercibleToString(value) {
+  return Object(to_string_x__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"])(Object(require_object_coercible_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(value));
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (requireCoercibleToString);
+
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var is_nil_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(11);
+
+/**
+ * The abstract operation RequireObjectCoercible throws an error if argument
+ * is a value that cannot be converted to an Object using ToObject.
+ *
+ * @param {*} [value] - The `value` to check.
+ * @throws {TypeError} If `value` is a `null` or `undefined`.
+ * @returns {string} The `value`.
+ */
+
+var requireObjectCoercible = function requireObjectCoercible(value) {
+  if (Object(is_nil_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(value)) {
+    throw new TypeError("Cannot call method on ".concat(value));
+  }
+
+  return value;
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (requireObjectCoercible);
+
+
+
+/***/ }),
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* unused harmony export list */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return string2016; });
+/* unused harmony export string2016 */
 /**
  * A record of a white space character.
  *
@@ -1237,480 +1242,13 @@ var string2016 = stringES2016;
 
 
 /***/ }),
-/* 13 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/**
- * Checks if `value` is `null` or `undefined`.
- *
- * @param {*} [value] - The value to check.
- * @returns {boolean} Returns `true` if `value` is nullish, else `false`.
- */
-var isNil = function isNil(value) {
-  /* eslint-disable-next-line lodash/prefer-is-nil */
-  return value === null || typeof value === 'undefined';
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (isNil);
-
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var require_object_coercible_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(17);
-/* harmony import */ var to_string_x__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
-
-
-/**
- * This method requires an argument is corecible then converts using ToString.
- *
- * @param {*} [value] - The value to converted to a string.
- * @throws {TypeError} If value is null or undefined.
- * @returns {string} The value as a string.
- */
-
-var requireCoercibleToString = function requireCoercibleToString(value) {
-  return Object(to_string_x__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"])(Object(require_object_coercible_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(value));
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (requireCoercibleToString);
-
-
-
-/***/ }),
-/* 15 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var is_safe_integer_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(25);
-
-/**
- * This method checks if `value` is a valid array-like length.
- *
- * @param {*} value - The value to check.
- * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
- */
-
-var isLength = function isLength(value) {
-  return Object(is_safe_integer_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(value) && value >= 0;
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (isLength);
-
-
-
-/***/ }),
-/* 16 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-var nativeObjectToString = {}.toString;
-/**
- * The `toStringTag` method returns "[object type]", where type is the
- * object type.
- *
- * @param {*} [value] - The object of which to get the object type string.
- * @returns {string} The object type string.
- */
-
-var toStringTag = function toStringTag(value) {
-  if (value === null) {
-    return '[object Null]';
-  }
-
-  if (typeof value === 'undefined') {
-    return '[object Undefined]';
-  }
-
-  return nativeObjectToString.call(value);
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (toStringTag);
-
-
-
-/***/ }),
-/* 17 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var is_nil_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(13);
-
-/**
- * The abstract operation RequireObjectCoercible throws an error if argument
- * is a value that cannot be converted to an Object using ToObject.
- *
- * @param {*} [value] - The `value` to check.
- * @throws {TypeError} If `value` is a `null` or `undefined`.
- * @returns {string} The `value`.
- */
-
-var requireObjectCoercible = function requireObjectCoercible(value) {
-  if (Object(is_nil_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(value)) {
-    throw new TypeError("Cannot call method on ".concat(value));
-  }
-
-  return value;
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (requireObjectCoercible);
-
-
-
-/***/ }),
 /* 18 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return trimLeft2016; });
-/* harmony import */ var require_coercible_to_string_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(14);
-/* harmony import */ var white_space_x__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(12);
-
-
-var EMPTY_STRING = '';
-var RegExpCtr = /none/.constructor;
-var reLeft2016 = new RegExpCtr("^[".concat(white_space_x__WEBPACK_IMPORTED_MODULE_1__[/* string2016 */ "b"], "]+"));
-var reLeft = new RegExpCtr("^[".concat(white_space_x__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"], "]+"));
-var replace = EMPTY_STRING.replace;
-/**
- * This method removes whitespace from the left end of a string. (ES2016).
- *
- * @param {string} [string] - The string to trim the left end whitespace from.
- * @throws {TypeError} If string is null or undefined or not coercible.
- * @returns {string} The left trimmed string.
- */
-
-function trimLeft2016(string) {
-  return replace.call(Object(require_coercible_to_string_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(string), reLeft2016, EMPTY_STRING);
-}
-/**
- * This method removes whitespace from the left end of a string. (ES2018).
- *
- * @param {string} [string] - The string to trim the left end whitespace from.
- * @throws {TypeError} If string is null or undefined or not coercible.
- * @returns {string} The left trimmed string.
- */
-
-var trimLeft2018 = function trimLeft2018(string) {
-  return replace.call(Object(require_coercible_to_string_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(string), reLeft, EMPTY_STRING);
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (trimLeft2018);
-
-
-
-/***/ }),
-/* 19 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-
-// EXTERNAL MODULE: ./node_modules/trim-left-x/dist/trim-left-x.esm.js
-var trim_left_x_esm = __webpack_require__(18);
-
-// EXTERNAL MODULE: ./node_modules/require-coercible-to-string-x/dist/require-coercible-to-string-x.esm.js
-var require_coercible_to_string_x_esm = __webpack_require__(14);
-
-// EXTERNAL MODULE: ./node_modules/white-space-x/dist/white-space-x.esm.js
-var white_space_x_esm = __webpack_require__(12);
-
-// CONCATENATED MODULE: ./node_modules/trim-right-x/dist/trim-right-x.esm.js
-
-
-var EMPTY_STRING = '';
-var RegExpCtr = /none/.constructor;
-var reRight2016 = new RegExpCtr("[".concat(white_space_x_esm["b" /* string2016 */], "]+$"));
-var reRight2018 = new RegExpCtr("[".concat(white_space_x_esm["a" /* default */], "]+$"));
-var replace = EMPTY_STRING.replace;
-/**
- * This method removes whitespace from the right end of a string. (ES2016).
- *
- * @param {string} [string] - The string to trim the right end whitespace from.
- * @throws {TypeError} If string is null or undefined or not coercible.
- * @returns {string} The right trimmed string.
- */
-
-function trimRight2016(string) {
-  return replace.call(Object(require_coercible_to_string_x_esm["a" /* default */])(string), reRight2016, EMPTY_STRING);
-}
-/**
- * This method removes whitespace from the right end of a string. (ES2018).
- *
- * @param {string} [string] - The string to trim the right end whitespace from.
- * @throws {TypeError} If string is null or undefined or not coercible.
- * @returns {string} The right trimmed string.
- */
-
-var trim_right_x_esm_trimRight2018 = function trimRight2018(string) {
-  return replace.call(Object(require_coercible_to_string_x_esm["a" /* default */])(string), reRight2018, EMPTY_STRING);
-};
-
-/* harmony default export */ var trim_right_x_esm = (trim_right_x_esm_trimRight2018);
-
-
-// CONCATENATED MODULE: ./node_modules/trim-x/dist/trim-x.esm.js
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return trim2016; });
-
-
-/**
- * This method removes whitespace from the left and right end of a string.
- * (ES2016).
- *
- * @param {string} [string] - The string to trim the whitespace from.
- * @throws {TypeError} If string is null or undefined or not coercible.
- * @returns {string} The trimmed string.
- */
-
-function trim2016(string) {
-  return Object(trim_left_x_esm["b" /* trimLeft2016 */])(trimRight2016(string));
-}
-/**
- * This method removes whitespace from the left and right end of a string.
- * (ES2018).
- *
- * @param {string} [string] - The string to trim the whitespace from.
- * @throws {TypeError} If string is null or undefined or not coercible.
- * @returns {string} The trimmed string.
- */
-
-var trim_x_esm_trim2018 = function trim2018(string) {
-  return Object(trim_left_x_esm["a" /* default */])(trim_right_x_esm(string));
-};
-
-/* harmony default export */ var trim_x_esm = __webpack_exports__["a"] = (trim_x_esm_trim2018);
-
-
-
-/***/ }),
-/* 20 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var has_symbol_support_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
-/* harmony import */ var is_primitive__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
-/* harmony import */ var is_primitive__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(is_primitive__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var is_date_object__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(27);
-/* harmony import */ var is_date_object__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(is_date_object__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var is_symbol__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
-/* harmony import */ var is_symbol__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(is_symbol__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var is_function_x__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1);
-/* harmony import */ var require_object_coercible_x__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(17);
-/* harmony import */ var is_nil_x__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(13);
-
-
-
-
-
-
-
-var ZERO = 0;
-var ONE = 1;
-/* eslint-disable-next-line no-void */
-
-var UNDEFINED = void ZERO;
-var NUMBER = 'number';
-var STRING = 'string';
-var DEFAULT = 'default';
-/** @type {StringConstructor} */
-
-var StringCtr = STRING.constructor;
-/** @type {NumberConstructor} */
-
-var NumberCtr = ZERO.constructor;
-/* eslint-disable-next-line compat/compat */
-
-var symToPrimitive = has_symbol_support_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"] && Symbol.toPrimitive;
-/* eslint-disable-next-line compat/compat */
-
-var symValueOf = has_symbol_support_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"] && Symbol.prototype.valueOf;
-var toStringOrder = ['toString', 'valueOf'];
-var toNumberOrder = ['valueOf', 'toString'];
-var orderLength = 2;
-/**
- * @param {*} ordinary - The ordinary to convert.
- * @param {*} hint - The hint.
- * @returns {*} - The primitive.
- */
-
-var ordinaryToPrimitive = function _ordinaryToPrimitive(ordinary, hint) {
-  Object(require_object_coercible_x__WEBPACK_IMPORTED_MODULE_5__[/* default */ "a"])(ordinary);
-
-  if (typeof hint !== 'string' || hint !== NUMBER && hint !== STRING) {
-    throw new TypeError('hint must be "string" or "number"');
-  }
-
-  var methodNames = hint === STRING ? toStringOrder : toNumberOrder;
-  var method;
-  var result;
-
-  for (var i = ZERO; i < orderLength; i += ONE) {
-    method = ordinary[methodNames[i]];
-
-    if (Object(is_function_x__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"])(method)) {
-      result = method.call(ordinary);
-
-      if (is_primitive__WEBPACK_IMPORTED_MODULE_1___default()(result)) {
-        return result;
-      }
-    }
-  }
-
-  throw new TypeError('No default value');
-};
-/**
- * @param {*} object - The object.
- * @param {*} property - The property.
- * @returns {undefined|Function} - The method.
- */
-
-
-var getMethod = function _getMethod(object, property) {
-  var func = object[property];
-
-  if (Object(is_nil_x__WEBPACK_IMPORTED_MODULE_6__[/* default */ "a"])(func) === false) {
-    if (Object(is_function_x__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"])(func) === false) {
-      throw new TypeError("".concat(func, " returned for property ").concat(property, " of object ").concat(object, " is not a function"));
-    }
-
-    return func;
-  }
-
-  return UNDEFINED;
-};
-/**
- * Get the hint.
- *
- * @param {*} value - The value to compare.
- * @param {boolean} supplied - Was a value supplied.
- * @returns {string} - The hint string.
- */
-
-
-var getHint = function getHint(value, supplied) {
-  if (supplied) {
-    if (value === StringCtr) {
-      return STRING;
-    }
-
-    if (value === NumberCtr) {
-      return NUMBER;
-    }
-  }
-
-  return DEFAULT;
-};
-/**
- * Get the primitive from the exotic.
- *
- * @param {*} value - The exotic.
- * @returns {*} - The primitive.
- */
-
-
-var getExoticToPrim = function getExoticToPrim(value) {
-  if (has_symbol_support_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"]) {
-    if (symToPrimitive) {
-      return getMethod(value, symToPrimitive);
-    }
-
-    if (is_symbol__WEBPACK_IMPORTED_MODULE_3___default()(value)) {
-      return symValueOf;
-    }
-  }
-
-  return UNDEFINED;
-};
-/**
- * This method converts a JavaScript object to a primitive value.
- * Note: When toPrimitive is called with no hint, then it generally behaves as
- * if the hint were Number. However, objects may over-ride this behaviour by
- * defining a @@toPrimitive method. Of the objects defined in this specification
- * only Date objects (see 20.3.4.45) and Symbol objects (see 19.4.3.4) over-ride
- * the default ToPrimitive behaviour. Date objects treat no hint as if the hint
- * were String.
- *
- * @param {*} input - The input to convert.
- * @param {NumberConstructor|StringConstructor} [preferredType] - The preferred type (String or Number).
- * @throws {TypeError} If unable to convert input to a primitive.
- * @returns {string|number} The converted input as a primitive.
- * @see {http://www.ecma-international.org/ecma-262/6.0/#sec-toprimitive}
- */
-
-
-var toPrimitive = function toPrimitive(input, preferredType) {
-  if (is_primitive__WEBPACK_IMPORTED_MODULE_1___default()(input)) {
-    return input;
-  }
-
-  var hint = getHint(preferredType, arguments.length > ONE);
-  var exoticToPrim = getExoticToPrim(input);
-
-  if (typeof exoticToPrim !== 'undefined') {
-    var result = exoticToPrim.call(input, hint);
-
-    if (is_primitive__WEBPACK_IMPORTED_MODULE_1___default()(result)) {
-      return result;
-    }
-
-    throw new TypeError('unable to convert exotic object to primitive');
-  }
-
-  var newHint = hint === DEFAULT && (is_date_object__WEBPACK_IMPORTED_MODULE_2___default()(input) || is_symbol__WEBPACK_IMPORTED_MODULE_3___default()(input)) ? STRING : hint;
-  return ordinaryToPrimitive(input, newHint === DEFAULT ? NUMBER : newHint);
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (toPrimitive);
-
-
-
-/***/ }),
-/* 21 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-
-// EXTERNAL MODULE: ./node_modules/is-nan-x/dist/is-nan-x.esm.js
-var is_nan_x_esm = __webpack_require__(7);
-
-// CONCATENATED MODULE: ./node_modules/infinity-x/dist/infinity-x.esm.js
-/**
- * The constant value Infinity derived mathematically by 1 / 0.
- *
- * @type number
- */
-/* harmony default export */ var infinity_x_esm = (1 / 0);
-
-
-// CONCATENATED MODULE: ./node_modules/is-finite-x/dist/is-finite-x.esm.js
-
-
-/**
- * This method determines whether the passed value is a finite number.
- *
- * @param {*} [number] - The value to be tested for finiteness.
- * @returns {boolean} A Boolean indicating whether or not the given value is a finite number.
- */
-
-var is_finite_x_esm_isFinite = function isFinite(number) {
-  return typeof number === 'number' && Object(is_nan_x_esm["a" /* default */])(number) === false && number !== infinity_x_esm && number !== -infinity_x_esm;
-};
-
-/* harmony default export */ var is_finite_x_esm = __webpack_exports__["a"] = (is_finite_x_esm_isFinite);
-
-
-
-/***/ }),
-/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 
 // EXTERNAL MODULE: ./node_modules/require-object-coercible-x/dist/require-object-coercible-x.esm.js
-var require_object_coercible_x_esm = __webpack_require__(17);
+var require_object_coercible_x_esm = __webpack_require__(16);
 
 // CONCATENATED MODULE: ./node_modules/to-object-x/dist/to-object-x.esm.js
 
@@ -1735,10 +1273,10 @@ var to_object_x_esm_toObject = function toObject(value) {
 var has_symbol_support_x_esm = __webpack_require__(5);
 
 // EXTERNAL MODULE: ./node_modules/to-primitive-x/dist/to-primitive-x.esm.js
-var to_primitive_x_esm = __webpack_require__(20);
+var to_primitive_x_esm = __webpack_require__(21);
 
 // EXTERNAL MODULE: ./node_modules/to-string-x/dist/to-string-x.esm.js
-var to_string_x_esm = __webpack_require__(10);
+var to_string_x_esm = __webpack_require__(12);
 
 // CONCATENATED MODULE: ./node_modules/to-property-key-x/dist/to-property-key-x.esm.js
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -2081,34 +1619,13 @@ var to_integer_x_esm = __webpack_require__(8);
 var MAX_SAFE_INTEGER = 9007199254740991;
 /**
  * Converts `value` to an integer suitable for use as the length of an
- * array-like object. (ES2016).
+ * array-like object. (ES2019).
  *
  * @param {*} value - The value to convert.
  * @returns {number} Returns the converted integer.
  */
 
-function toLength2016(value) {
-  var len = Object(to_integer_x_esm["b" /* toInteger2016 */])(value); // includes converting -0 to +0
-
-  if (len <= 0) {
-    return 0;
-  }
-
-  if (len > MAX_SAFE_INTEGER) {
-    return MAX_SAFE_INTEGER;
-  }
-
-  return len;
-}
-/**
- * Converts `value` to an integer suitable for use as the length of an
- * array-like object. (ES2018).
- *
- * @param {*} value - The value to convert.
- * @returns {number} Returns the converted integer.
- */
-
-var to_length_x_esm_toLength2018 = function toLength2018(value) {
+var to_length_x_esm_toLength = function toLength(value) {
   var len = Object(to_integer_x_esm["a" /* default */])(value); // includes converting -0 to +0
 
   if (len <= 0) {
@@ -2122,7 +1639,7 @@ var to_length_x_esm_toLength2018 = function toLength2018(value) {
   return len;
 };
 
-/* harmony default export */ var to_length_x_esm = (to_length_x_esm_toLength2018);
+/* harmony default export */ var to_length_x_esm = (to_length_x_esm_toLength);
 
 
 // CONCATENATED MODULE: ./node_modules/assert-is-function-x/dist/assert-is-function-x.esm.js
@@ -2325,7 +1842,7 @@ var arrayForEach = $forEach;
 
 
 // EXTERNAL MODULE: ./node_modules/to-string-tag-x/dist/to-string-tag-x.esm.js
-var to_string_tag_x_esm = __webpack_require__(16);
+var to_string_tag_x_esm = __webpack_require__(14);
 
 // CONCATENATED MODULE: ./node_modules/is-array-x/dist/is-array-x.esm.js
 var is_array_x_esm_this = undefined;
@@ -2366,7 +1883,7 @@ var isArrayFn = function iife() {
 
 
 // EXTERNAL MODULE: ./node_modules/is-arguments/index.js
-var is_arguments = __webpack_require__(24);
+var is_arguments = __webpack_require__(22);
 var is_arguments_default = /*#__PURE__*/__webpack_require__.n(is_arguments);
 
 // CONCATENATED MODULE: ./node_modules/array-like-slice-x/dist/array-like-slice-x.esm.js
@@ -2439,7 +1956,7 @@ var array_like_slice_x_esm_slice = function slice(arrayLike, start, end) {
 var is_object_like_x_esm = __webpack_require__(4);
 
 // EXTERNAL MODULE: ./node_modules/has-to-string-tag-x/dist/has-to-string-tag-x.esm.js
-var has_to_string_tag_x_esm = __webpack_require__(23);
+var has_to_string_tag_x_esm = __webpack_require__(19);
 
 // EXTERNAL MODULE: ./node_modules/to-number-x/dist/to-number-x.esm.js + 2 modules
 var to_number_x_esm = __webpack_require__(9);
@@ -3239,7 +2756,7 @@ var object_define_properties_x_esm_defineProperties = function defineProperties(
 
 
 // EXTERNAL MODULE: ./node_modules/is-array-like-x/dist/is-array-like-x.esm.js
-var is_array_like_x_esm = __webpack_require__(11);
+var is_array_like_x_esm = __webpack_require__(10);
 
 // CONCATENATED MODULE: ./node_modules/is-surrogate-pair-x/dist/is-surrogate-pair-x.esm.js
 
@@ -4072,10 +3589,10 @@ object_define_properties_x_esm(big_counter_x_esm_BigCounter.prototype, {
 
 
 // EXTERNAL MODULE: ./node_modules/is-nil-x/dist/is-nil-x.esm.js
-var is_nil_x_esm = __webpack_require__(13);
+var is_nil_x_esm = __webpack_require__(11);
 
 // EXTERNAL MODULE: ./node_modules/is-length-x/dist/is-length-x.esm.js
-var is_length_x_esm = __webpack_require__(15);
+var is_length_x_esm = __webpack_require__(13);
 
 // CONCATENATED MODULE: ./node_modules/is-map-x/dist/is-map-x.esm.js
 var is_map_x_esm_this = undefined;
@@ -5910,7 +5427,7 @@ var collections_x_esm_isSet = $$isSet;
 
 
 /***/ }),
-/* 23 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -5933,7 +5450,218 @@ is_symbol__WEBPACK_IMPORTED_MODULE_1___default()(Symbol.toStringTag));
 
 
 /***/ }),
-/* 24 */
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var require_coercible_to_string_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(15);
+/* harmony import */ var white_space_x__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(17);
+
+
+var EMPTY_STRING = '';
+var RegExpCtr = /none/.constructor;
+var reLeft = new RegExpCtr("^[".concat(white_space_x__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"], "]+"));
+var replace = EMPTY_STRING.replace;
+/**
+ * This method removes whitespace from the start of a string. (ES2019).
+ *
+ * @param {string} [string] - The string to trim the left end whitespace from.
+ * @throws {TypeError} If string is null or undefined or not coercible.
+ * @returns {string} The left trimmed string.
+ */
+
+var trimStart = function trimStart(string) {
+  return replace.call(Object(require_coercible_to_string_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(string), reLeft, EMPTY_STRING);
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (trimStart);
+
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var has_symbol_support_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony import */ var is_primitive__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/* harmony import */ var is_primitive__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(is_primitive__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var is_date_object__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(27);
+/* harmony import */ var is_date_object__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(is_date_object__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var is_symbol__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3);
+/* harmony import */ var is_symbol__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(is_symbol__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var is_function_x__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1);
+/* harmony import */ var require_object_coercible_x__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(16);
+/* harmony import */ var is_nil_x__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(11);
+
+
+
+
+
+
+
+var ZERO = 0;
+var ONE = 1;
+/* eslint-disable-next-line no-void */
+
+var UNDEFINED = void ZERO;
+var NUMBER = 'number';
+var STRING = 'string';
+var DEFAULT = 'default';
+/** @type {StringConstructor} */
+
+var StringCtr = STRING.constructor;
+/** @type {NumberConstructor} */
+
+var NumberCtr = ZERO.constructor;
+/* eslint-disable-next-line compat/compat */
+
+var symToPrimitive = has_symbol_support_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"] && Symbol.toPrimitive;
+/* eslint-disable-next-line compat/compat */
+
+var symValueOf = has_symbol_support_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"] && Symbol.prototype.valueOf;
+var toStringOrder = ['toString', 'valueOf'];
+var toNumberOrder = ['valueOf', 'toString'];
+var orderLength = 2;
+/**
+ * @param {*} ordinary - The ordinary to convert.
+ * @param {*} hint - The hint.
+ * @returns {*} - The primitive.
+ */
+
+var ordinaryToPrimitive = function _ordinaryToPrimitive(ordinary, hint) {
+  Object(require_object_coercible_x__WEBPACK_IMPORTED_MODULE_5__[/* default */ "a"])(ordinary);
+
+  if (typeof hint !== 'string' || hint !== NUMBER && hint !== STRING) {
+    throw new TypeError('hint must be "string" or "number"');
+  }
+
+  var methodNames = hint === STRING ? toStringOrder : toNumberOrder;
+  var method;
+  var result;
+
+  for (var i = ZERO; i < orderLength; i += ONE) {
+    method = ordinary[methodNames[i]];
+
+    if (Object(is_function_x__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"])(method)) {
+      result = method.call(ordinary);
+
+      if (is_primitive__WEBPACK_IMPORTED_MODULE_1___default()(result)) {
+        return result;
+      }
+    }
+  }
+
+  throw new TypeError('No default value');
+};
+/**
+ * @param {*} object - The object.
+ * @param {*} property - The property.
+ * @returns {undefined|Function} - The method.
+ */
+
+
+var getMethod = function _getMethod(object, property) {
+  var func = object[property];
+
+  if (Object(is_nil_x__WEBPACK_IMPORTED_MODULE_6__[/* default */ "a"])(func) === false) {
+    if (Object(is_function_x__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"])(func) === false) {
+      throw new TypeError("".concat(func, " returned for property ").concat(property, " of object ").concat(object, " is not a function"));
+    }
+
+    return func;
+  }
+
+  return UNDEFINED;
+};
+/**
+ * Get the hint.
+ *
+ * @param {*} value - The value to compare.
+ * @param {boolean} supplied - Was a value supplied.
+ * @returns {string} - The hint string.
+ */
+
+
+var getHint = function getHint(value, supplied) {
+  if (supplied) {
+    if (value === StringCtr) {
+      return STRING;
+    }
+
+    if (value === NumberCtr) {
+      return NUMBER;
+    }
+  }
+
+  return DEFAULT;
+};
+/**
+ * Get the primitive from the exotic.
+ *
+ * @param {*} value - The exotic.
+ * @returns {*} - The primitive.
+ */
+
+
+var getExoticToPrim = function getExoticToPrim(value) {
+  if (has_symbol_support_x__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"]) {
+    if (symToPrimitive) {
+      return getMethod(value, symToPrimitive);
+    }
+
+    if (is_symbol__WEBPACK_IMPORTED_MODULE_3___default()(value)) {
+      return symValueOf;
+    }
+  }
+
+  return UNDEFINED;
+};
+/**
+ * This method converts a JavaScript object to a primitive value.
+ * Note: When toPrimitive is called with no hint, then it generally behaves as
+ * if the hint were Number. However, objects may over-ride this behaviour by
+ * defining a @@toPrimitive method. Of the objects defined in this specification
+ * only Date objects (see 20.3.4.45) and Symbol objects (see 19.4.3.4) over-ride
+ * the default ToPrimitive behaviour. Date objects treat no hint as if the hint
+ * were String.
+ *
+ * @param {*} input - The input to convert.
+ * @param {NumberConstructor|StringConstructor} [preferredType] - The preferred type (String or Number).
+ * @throws {TypeError} If unable to convert input to a primitive.
+ * @returns {string|number} The converted input as a primitive.
+ * @see {http://www.ecma-international.org/ecma-262/6.0/#sec-toprimitive}
+ */
+
+
+var toPrimitive = function toPrimitive(input, preferredType) {
+  if (is_primitive__WEBPACK_IMPORTED_MODULE_1___default()(input)) {
+    return input;
+  }
+
+  var hint = getHint(preferredType, arguments.length > ONE);
+  var exoticToPrim = getExoticToPrim(input);
+
+  if (typeof exoticToPrim !== 'undefined') {
+    var result = exoticToPrim.call(input, hint);
+
+    if (is_primitive__WEBPACK_IMPORTED_MODULE_1___default()(result)) {
+      return result;
+    }
+
+    throw new TypeError('unable to convert exotic object to primitive');
+  }
+
+  var newHint = hint === DEFAULT && (is_date_object__WEBPACK_IMPORTED_MODULE_2___default()(input) || is_symbol__WEBPACK_IMPORTED_MODULE_3___default()(input)) ? STRING : hint;
+  return ordinaryToPrimitive(input, newHint === DEFAULT ? NUMBER : newHint);
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (toPrimitive);
+
+
+
+/***/ }),
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5971,13 +5699,13 @@ module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArgum
 
 
 /***/ }),
-/* 25 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 
 // EXTERNAL MODULE: ./node_modules/is-finite-x/dist/is-finite-x.esm.js + 1 modules
-var is_finite_x_esm = __webpack_require__(21);
+var is_finite_x_esm = __webpack_require__(24);
 
 // EXTERNAL MODULE: ./node_modules/to-integer-x/dist/to-integer-x.esm.js + 1 modules
 var to_integer_x_esm = __webpack_require__(8);
@@ -6020,6 +5748,99 @@ var is_safe_integer_x_esm_isSafeInteger = function isSafeInteger(value) {
 };
 
 /* harmony default export */ var is_safe_integer_x_esm = __webpack_exports__["a"] = (is_safe_integer_x_esm_isSafeInteger);
+
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+// EXTERNAL MODULE: ./node_modules/is-nan-x/dist/is-nan-x.esm.js
+var is_nan_x_esm = __webpack_require__(7);
+
+// CONCATENATED MODULE: ./node_modules/infinity-x/dist/infinity-x.esm.js
+/**
+ * The constant value Infinity derived mathematically by 1 / 0.
+ *
+ * @type number
+ */
+/* harmony default export */ var infinity_x_esm = (1 / 0);
+
+
+// CONCATENATED MODULE: ./node_modules/is-finite-x/dist/is-finite-x.esm.js
+
+
+/**
+ * This method determines whether the passed value is a finite number.
+ *
+ * @param {*} [number] - The value to be tested for finiteness.
+ * @returns {boolean} A Boolean indicating whether or not the given value is a finite number.
+ */
+
+var is_finite_x_esm_isFinite = function isFinite(number) {
+  return typeof number === 'number' && Object(is_nan_x_esm["a" /* default */])(number) === false && number !== infinity_x_esm && number !== -infinity_x_esm;
+};
+
+/* harmony default export */ var is_finite_x_esm = __webpack_exports__["a"] = (is_finite_x_esm_isFinite);
+
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+// EXTERNAL MODULE: ./node_modules/trim-left-x/dist/trim-left-x.esm.js
+var trim_left_x_esm = __webpack_require__(20);
+
+// EXTERNAL MODULE: ./node_modules/require-coercible-to-string-x/dist/require-coercible-to-string-x.esm.js
+var require_coercible_to_string_x_esm = __webpack_require__(15);
+
+// EXTERNAL MODULE: ./node_modules/white-space-x/dist/white-space-x.esm.js
+var white_space_x_esm = __webpack_require__(17);
+
+// CONCATENATED MODULE: ./node_modules/trim-right-x/dist/trim-right-x.esm.js
+
+
+var EMPTY_STRING = '';
+var RegExpCtr = /none/.constructor;
+var reRight2018 = new RegExpCtr("[".concat(white_space_x_esm["a" /* default */], "]+$"));
+var replace = EMPTY_STRING.replace;
+/**
+ * This method removes whitespace from the end of a string. (ES2019).
+ *
+ * @param {string} [string] - The string to trim the right end whitespace from.
+ * @throws {TypeError} If string is null or undefined or not coercible.
+ * @returns {string} The right trimmed string.
+ */
+
+var trim_right_x_esm_trimEnd = function trimEnd(string) {
+  return replace.call(Object(require_coercible_to_string_x_esm["a" /* default */])(string), reRight2018, EMPTY_STRING);
+};
+
+/* harmony default export */ var trim_right_x_esm = (trim_right_x_esm_trimEnd);
+
+
+// CONCATENATED MODULE: ./node_modules/trim-x/dist/trim-x.esm.js
+
+
+/**
+ * This method removes whitespace from the start and end of a string.
+ * (ES2019).
+ *
+ * @param {string} [string] - The string to trim the whitespace from.
+ * @throws {TypeError} If string is null or undefined or not coercible.
+ * @returns {string} The trimmed string.
+ */
+
+var trim_x_esm_trim = function trim(string) {
+  return Object(trim_left_x_esm["a" /* default */])(trim_right_x_esm(string));
+};
+
+/* harmony default export */ var trim_x_esm = __webpack_exports__["a"] = (trim_x_esm_trim);
 
 
 
@@ -6177,13 +5998,13 @@ module.exports = function isBoolean(value) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Enum; });
-/* harmony import */ var is_array_like_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(11);
+/* harmony import */ var is_array_like_x__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(10);
 /* harmony import */ var is_object_like_x__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
-/* harmony import */ var is_safe_integer_x__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(25);
+/* harmony import */ var is_safe_integer_x__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(23);
 /* harmony import */ var is_var_name__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(28);
 /* harmony import */ var is_symbol__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3);
 /* harmony import */ var is_symbol__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(is_symbol__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var collections_x__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(22);
+/* harmony import */ var collections_x__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(18);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
