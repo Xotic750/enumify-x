@@ -4,6 +4,20 @@ import isSafeInteger from 'is-safe-integer-x';
 import isVarName from 'is-var-name';
 import isSymbol from 'is-symbol';
 import {SetConstructor, MapConstructor} from 'collections-x';
+import objectKeys from 'object-keys-x';
+import defineProperties from 'object-define-properties-x';
+import defineProperty from 'object-define-property-x';
+import objectCreate from 'object-create-x';
+import arrayForEach from 'array-for-each-x';
+import toStr from 'to-string-x';
+import {stringify} from 'json3';
+
+const {push, join, shift} = [];
+const nativeFreeze = {}.constructor.freeze;
+const hasFreeze = typeof nativeFreeze === 'function';
+const objectFreeze = function freeze(value) {
+  return hasFreeze ? nativeFreeze(value) : value;
+};
 
 const reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'value', 'valueOf']);
 
@@ -22,13 +36,13 @@ const reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'v
  */
 export default function Enum(name, value) {
   if (arguments.length > 0) {
-    const strName = isSymbol(name) === false && String(name);
+    const strName = isSymbol(name) === false && toStr(name);
 
     if (reserved.has(strName)) {
       throw new SyntaxError(`Name is reserved: ${strName}`);
     }
 
-    Object.defineProperties(this, {
+    defineProperties(this, {
       name: {
         enumerable: true,
         value: strName,
@@ -39,11 +53,11 @@ export default function Enum(name, value) {
       },
     });
 
-    Object.freeze(this);
+    objectFreeze(this);
   }
 }
 
-Object.defineProperties(Enum.prototype, {
+defineProperties(Enum.prototype, {
   toJSON: {
     value: function toJSON() {
       return {
@@ -59,7 +73,7 @@ Object.defineProperties(Enum.prototype, {
   },
 });
 
-const generateNextValue = function _generateNextValue() {
+const generateNextValue = function generateNextValue() {
   let count = 0;
 
   return {
@@ -77,7 +91,7 @@ const generateNextValue = function _generateNextValue() {
   };
 };
 
-const initialise = function _initialise(CstmCtr, properties, opts) {
+const initialise = function initialise(CstmCtr, properties, opts) {
   const keys = new SetConstructor();
   const dNames = new MapConstructor();
   const dValues = new MapConstructor();
@@ -96,7 +110,7 @@ const initialise = function _initialise(CstmCtr, properties, opts) {
   const iter = typeof opts.auto === 'function' ? opts.auto() : generateNextValue();
   let next;
 
-  const itemsIteratee = function _itemsIteratee(item) {
+  const itemsIteratee = function itemsIteratee(item) {
     let ident;
 
     if (isClone || isObjectLike(item)) {
@@ -131,13 +145,13 @@ const initialise = function _initialise(CstmCtr, properties, opts) {
       keys.add(name);
     }
 
-    Object.defineProperty(CstmCtr, name, {
+    defineProperty(CstmCtr, name, {
       enumerable: true,
       value: ident,
     });
   };
 
-  items.forEach(itemsIteratee);
+  arrayForEach(items, itemsIteratee);
 
   return {
     keys,
@@ -146,16 +160,16 @@ const initialise = function _initialise(CstmCtr, properties, opts) {
   };
 };
 
-const calcString = function _calcString(ctrName, names) {
+const calcString = function calcString(ctrName, names) {
   const strArr = [];
   names.forEach((enumMember) => {
-    strArr.push(JSON.stringify(enumMember.name));
+    push.call(strArr, stringify(enumMember.name));
   });
 
-  return `${ctrName} { ${strArr.join(', ')} }`;
+  return `${ctrName} { ${join.call(strArr, ', ')} }`;
 };
 
-Object.defineProperties(Enum, {
+defineProperties(Enum, {
   /**
    * Creates an enumeration collection. Primary method.
    *
@@ -166,7 +180,7 @@ Object.defineProperties(Enum, {
    */
   create: {
     value: function create(typeName, properties, options) {
-      const ctrName = isSymbol(typeName) === false && String(typeName);
+      const ctrName = isSymbol(typeName) === false && toStr(typeName);
 
       if (ctrName === 'undefined' || isVarName(ctrName) === false) {
         throw new Error(`Invalid enum name: ${ctrName}`);
@@ -177,7 +191,7 @@ Object.defineProperties(Enum, {
       let data;
 
       // noinspection JSUnusedLocalSymbols
-      const construct /* eslint-disable-line no-unused-vars */ = function _construct(context, args) {
+      const construct = function construct(context, args) {
         const argsArr = [...args];
 
         if (data) {
@@ -185,7 +199,7 @@ Object.defineProperties(Enum, {
             throw new SyntaxError('Enum classes can’t be instantiated');
           }
 
-          return data.names.get(data.values.get(argsArr.shift()));
+          return data.names.get(data.values.get(shift.call(argsArr)));
         }
 
         Enum.apply(context, argsArr);
@@ -193,11 +207,11 @@ Object.defineProperties(Enum, {
         return context;
       };
 
-      /* eslint-disable-next-line no-eval */
-      CstmCtr = eval(`(0,function ${ctrName}(value){return construct(this,arguments)})`);
+      /* eslint-disable-next-line no-new-func */
+      CstmCtr = Function('construct', `return function ${ctrName}(value){return construct(this,arguments)}`)(construct);
 
       let asString;
-      Object.defineProperties(CstmCtr, {
+      defineProperties(CstmCtr, {
         forEach: {
           value: function forEach(callback, thisArg) {
             data.keys.forEach((key) => {
@@ -210,7 +224,7 @@ Object.defineProperties(Enum, {
           value: function toJSON() {
             const value = [];
             data.names.forEach((enumMember) => {
-              value.push(enumMember.toJSON());
+              push.call(value, enumMember.toJSON());
             });
 
             return value;
@@ -231,7 +245,7 @@ Object.defineProperties(Enum, {
       /* eslint-disable-next-line compat/compat */
       if (typeof Symbol === 'function' && isSymbol(Symbol(''))) {
         /* eslint-disable-next-line compat/compat */
-        Object.defineProperty(CstmCtr, Symbol.iterator, {
+        defineProperty(CstmCtr, Symbol.iterator, {
           value: function iterator() {
             /* eslint-disable-next-line compat/compat */
             const iter = data.keys[Symbol.iterator]();
@@ -253,14 +267,14 @@ Object.defineProperties(Enum, {
         });
       }
 
-      CstmCtr.prototype = Object.create(Enum.prototype);
-      Object.defineProperties(CstmCtr.prototype, {
+      CstmCtr.prototype = objectCreate(Enum.prototype);
+      defineProperties(CstmCtr.prototype, {
         constructor: {value: CstmCtr},
         name: {value: ctrName},
       });
 
       if (isObjectLike(opts.classMethods)) {
-        Object.keys(opts.classMethods).forEach((key) => {
+        arrayForEach(objectKeys(opts.classMethods), (key) => {
           if (reserved.has(key)) {
             throw new SyntaxError(`Name is reserved: ${key}`);
           }
@@ -268,14 +282,14 @@ Object.defineProperties(Enum, {
           const method = opts.classMethods[key];
 
           if (typeof method === 'function') {
-            Object.defineProperty(CstmCtr, key, {value: method});
+            defineProperty(CstmCtr, key, {value: method});
             reserved.add(key);
           }
         });
       }
 
       if (isObjectLike(opts.instanceMethods)) {
-        Object.keys(opts.instanceMethods).forEach((key) => {
+        arrayForEach(objectKeys(opts.instanceMethods), (key) => {
           if (reserved.has(key)) {
             throw new SyntaxError(`Name is reserved: ${key}`);
           }
@@ -283,7 +297,7 @@ Object.defineProperties(Enum, {
           const method = opts.instanceMethods[key];
 
           if (typeof method === 'function') {
-            Object.defineProperty(CstmCtr.prototype, key, {value: method});
+            defineProperty(CstmCtr.prototype, key, {value: method});
             reserved.add(key);
           }
         });
@@ -291,7 +305,7 @@ Object.defineProperties(Enum, {
 
       data = initialise(CstmCtr, properties, opts);
 
-      return Object.freeze(CstmCtr);
+      return objectFreeze(CstmCtr);
     },
   },
 });

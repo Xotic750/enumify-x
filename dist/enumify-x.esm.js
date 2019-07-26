@@ -14,6 +14,24 @@ import isSafeInteger from 'is-safe-integer-x';
 import isVarName from 'is-var-name';
 import isSymbol from 'is-symbol';
 import { SetConstructor, MapConstructor } from 'collections-x';
+import objectKeys from 'object-keys-x';
+import defineProperties from 'object-define-properties-x';
+import defineProperty from 'object-define-property-x';
+import objectCreate from 'object-create-x';
+import arrayForEach from 'array-for-each-x';
+import toStr from 'to-string-x';
+import { stringify } from 'json3';
+var _ref = [],
+    push = _ref.push,
+    join = _ref.join,
+    shift = _ref.shift;
+var nativeFreeze = {}.constructor.freeze;
+var hasFreeze = typeof nativeFreeze === 'function';
+
+var objectFreeze = function freeze(value) {
+  return hasFreeze ? nativeFreeze(value) : value;
+};
+
 var reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'value', 'valueOf']);
 /**
  * An enumeration is a set of symbolic names (members) bound to unique, constant
@@ -31,13 +49,13 @@ var reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'val
 
 export default function Enum(name, value) {
   if (arguments.length > 0) {
-    var strName = isSymbol(name) === false && String(name);
+    var strName = isSymbol(name) === false && toStr(name);
 
     if (reserved.has(strName)) {
       throw new SyntaxError("Name is reserved: ".concat(strName));
     }
 
-    Object.defineProperties(this, {
+    defineProperties(this, {
       name: {
         enumerable: true,
         value: strName
@@ -47,10 +65,10 @@ export default function Enum(name, value) {
         value: value
       }
     });
-    Object.freeze(this);
+    objectFreeze(this);
   }
 }
-Object.defineProperties(Enum.prototype, {
+defineProperties(Enum.prototype, {
   toJSON: {
     value: function toJSON() {
       return {
@@ -66,7 +84,7 @@ Object.defineProperties(Enum.prototype, {
   }
 });
 
-var generateNextValue = function _generateNextValue() {
+var generateNextValue = function generateNextValue() {
   var count = 0;
   return {
     next: function next(name, value) {
@@ -81,7 +99,7 @@ var generateNextValue = function _generateNextValue() {
   };
 };
 
-var initialise = function _initialise(CstmCtr, properties, opts) {
+var initialise = function initialise(CstmCtr, properties, opts) {
   var keys = new SetConstructor();
   var dNames = new MapConstructor();
   var dValues = new MapConstructor();
@@ -100,7 +118,7 @@ var initialise = function _initialise(CstmCtr, properties, opts) {
   var iter = typeof opts.auto === 'function' ? opts.auto() : generateNextValue();
   var next;
 
-  var itemsIteratee = function _itemsIteratee(item) {
+  var itemsIteratee = function itemsIteratee(item) {
     var ident;
 
     if (isClone || isObjectLike(item)) {
@@ -136,13 +154,13 @@ var initialise = function _initialise(CstmCtr, properties, opts) {
       keys.add(name);
     }
 
-    Object.defineProperty(CstmCtr, name, {
+    defineProperty(CstmCtr, name, {
       enumerable: true,
       value: ident
     });
   };
 
-  items.forEach(itemsIteratee);
+  arrayForEach(items, itemsIteratee);
   return {
     keys: keys,
     names: dNames,
@@ -150,19 +168,19 @@ var initialise = function _initialise(CstmCtr, properties, opts) {
   };
 };
 
-var calcString = function _calcString(ctrName, names) {
+var calcString = function calcString(ctrName, names) {
   var _this = this;
 
   var strArr = [];
   names.forEach(function (enumMember) {
     _newArrowCheck(this, _this);
 
-    strArr.push(JSON.stringify(enumMember.name));
+    push.call(strArr, stringify(enumMember.name));
   }.bind(this));
-  return "".concat(ctrName, " { ").concat(strArr.join(', '), " }");
+  return "".concat(ctrName, " { ").concat(join.call(strArr, ', '), " }");
 };
 
-Object.defineProperties(Enum, {
+defineProperties(Enum, {
   /**
    * Creates an enumeration collection. Primary method.
    *
@@ -175,7 +193,7 @@ Object.defineProperties(Enum, {
     value: function create(typeName, properties, options) {
       var _this4 = this;
 
-      var ctrName = isSymbol(typeName) === false && String(typeName);
+      var ctrName = isSymbol(typeName) === false && toStr(typeName);
 
       if (ctrName === 'undefined' || isVarName(ctrName) === false) {
         throw new Error("Invalid enum name: ".concat(ctrName));
@@ -185,9 +203,7 @@ Object.defineProperties(Enum, {
       var CstmCtr;
       var data; // noinspection JSUnusedLocalSymbols
 
-      var construct
-      /* eslint-disable-line no-unused-vars */
-      = function _construct(context, args) {
+      var construct = function construct(context, args) {
         var argsArr = _toConsumableArray(args);
 
         if (data) {
@@ -195,18 +211,18 @@ Object.defineProperties(Enum, {
             throw new SyntaxError('Enum classes can’t be instantiated');
           }
 
-          return data.names.get(data.values.get(argsArr.shift()));
+          return data.names.get(data.values.get(shift.call(argsArr)));
         }
 
         Enum.apply(context, argsArr);
         return context;
       };
-      /* eslint-disable-next-line no-eval */
+      /* eslint-disable-next-line no-new-func */
 
 
-      CstmCtr = eval("(0,function ".concat(ctrName, "(value){return construct(this,arguments)})"));
+      CstmCtr = Function('construct', "return function ".concat(ctrName, "(value){return construct(this,arguments)}"))(construct);
       var asString;
-      Object.defineProperties(CstmCtr, {
+      defineProperties(CstmCtr, {
         forEach: {
           value: function forEach(callback, thisArg) {
             var _this2 = this;
@@ -226,7 +242,7 @@ Object.defineProperties(Enum, {
             data.names.forEach(function (enumMember) {
               _newArrowCheck(this, _this3);
 
-              value.push(enumMember.toJSON());
+              push.call(value, enumMember.toJSON());
             }.bind(this));
             return value;
           }
@@ -245,7 +261,7 @@ Object.defineProperties(Enum, {
 
       if (typeof Symbol === 'function' && isSymbol(Symbol(''))) {
         /* eslint-disable-next-line compat/compat */
-        Object.defineProperty(CstmCtr, Symbol.iterator, {
+        defineProperty(CstmCtr, Symbol.iterator, {
           value: function iterator() {
             /* eslint-disable-next-line compat/compat */
             var iter = data.keys[Symbol.iterator]();
@@ -265,8 +281,8 @@ Object.defineProperties(Enum, {
         });
       }
 
-      CstmCtr.prototype = Object.create(Enum.prototype);
-      Object.defineProperties(CstmCtr.prototype, {
+      CstmCtr.prototype = objectCreate(Enum.prototype);
+      defineProperties(CstmCtr.prototype, {
         constructor: {
           value: CstmCtr
         },
@@ -276,7 +292,7 @@ Object.defineProperties(Enum, {
       });
 
       if (isObjectLike(opts.classMethods)) {
-        Object.keys(opts.classMethods).forEach(function (key) {
+        arrayForEach(objectKeys(opts.classMethods), function (key) {
           _newArrowCheck(this, _this4);
 
           if (reserved.has(key)) {
@@ -286,7 +302,7 @@ Object.defineProperties(Enum, {
           var method = opts.classMethods[key];
 
           if (typeof method === 'function') {
-            Object.defineProperty(CstmCtr, key, {
+            defineProperty(CstmCtr, key, {
               value: method
             });
             reserved.add(key);
@@ -295,7 +311,7 @@ Object.defineProperties(Enum, {
       }
 
       if (isObjectLike(opts.instanceMethods)) {
-        Object.keys(opts.instanceMethods).forEach(function (key) {
+        arrayForEach(objectKeys(opts.instanceMethods), function (key) {
           _newArrowCheck(this, _this4);
 
           if (reserved.has(key)) {
@@ -305,7 +321,7 @@ Object.defineProperties(Enum, {
           var method = opts.instanceMethods[key];
 
           if (typeof method === 'function') {
-            Object.defineProperty(CstmCtr.prototype, key, {
+            defineProperty(CstmCtr.prototype, key, {
               value: method
             });
             reserved.add(key);
@@ -314,7 +330,7 @@ Object.defineProperties(Enum, {
       }
 
       data = initialise(CstmCtr, properties, opts);
-      return Object.freeze(CstmCtr);
+      return objectFreeze(CstmCtr);
     }
   }
 });
