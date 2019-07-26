@@ -1,10 +1,12 @@
-<a href="https://travis-ci.org/Xotic750/enumify-x"
+<a
+  href="https://travis-ci.org/Xotic750/enumify-x"
   title="Travis status">
 <img
   src="https://travis-ci.org/Xotic750/enumify-x.svg?branch=master"
   alt="Travis status" height="18">
 </a>
-<a href="https://david-dm.org/Xotic750/enumify-x"
+<a
+  href="https://david-dm.org/Xotic750/enumify-x"
   title="Dependency status">
 <img src="https://david-dm.org/Xotic750/enumify-x/status.svg"
   alt="Dependency status" height="18"/>
@@ -15,15 +17,23 @@
 <img src="https://david-dm.org/Xotic750/enumify-x/dev-status.svg"
   alt="devDependency status" height="18"/>
 </a>
-<a href="https://badge.fury.io/js/enumify-x"
+<a
+  href="https://badge.fury.io/js/enumify-x"
   title="npm version">
 <img src="https://badge.fury.io/js/enumify-x.svg"
   alt="npm version" height="18">
 </a>
-<a href="https://www.jsdelivr.com/package/npm/enumify-x"
+<a
+  href="https://www.jsdelivr.com/package/npm/enumify-x"
   title="jsDelivr hits">
 <img src="https://data.jsdelivr.com/v1/package/npm/enumify-x/badge?style=rounded"
   alt="jsDelivr hits" height="18">
+</a>
+<a
+  href="https://bettercodehub.com/results/Xotic750/enumify-x"
+  title="bettercodehub score">
+<img src="https://bettercodehub.com/edge/badge/Xotic750/enumify-x?branch=master"
+  alt="bettercodehub score" height="18">
 </a>
 
 <a name="module_enumify-x"></a>
