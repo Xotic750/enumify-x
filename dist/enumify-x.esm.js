@@ -115,6 +115,30 @@ var generateNextValue = function generateNextValue() {
     }
   };
 };
+
+var getItems = function getItems(properties) {
+  var isClone = false;
+  var items;
+
+  if (isArrayLike(properties)) {
+    items = properties;
+  } else {
+    // noinspection JSUnresolvedVariable
+    isClone = typeof properties === 'function' && properties.prototype instanceof Enum;
+
+    if (isClone) {
+      // noinspection JSUnresolvedFunction
+      items = properties.toJSON();
+    } else {
+      throw new Error('bad args');
+    }
+  }
+
+  return {
+    isClone: isClone,
+    items: items
+  };
+};
 /**
  * Initialise a new enum.
  *
@@ -128,31 +152,15 @@ var generateNextValue = function generateNextValue() {
 var initialise = function initialise(CstmCtr, properties, opts) {
   var _this = this;
 
-  /** @type {Set<string>} */
-  var keys = new SetConstructor();
-  /** @type {Map<name,object>} */
+  var results = {
+    keys: new SetConstructor(),
+    names: new MapConstructor(),
+    values: new MapConstructor()
+  };
 
-  var dNames = new MapConstructor();
-  /** @type {Map<name,*>} */
-
-  var dValues = new MapConstructor();
-  var isClone;
-  var items;
-
-  if (isArrayLike(properties)) {
-    items = properties;
-  } else {
-    // noinspection JSUnresolvedVariable
-    var isEnum = typeof properties === 'function' && properties.prototype instanceof Enum;
-
-    if (isEnum) {
-      isClone = true; // noinspection JSUnresolvedFunction
-
-      items = properties.toJSON();
-    } else {
-      throw new Error('bad args');
-    }
-  }
+  var _getItems = getItems(properties),
+      isClone = _getItems.isClone,
+      items = _getItems.items;
 
   var iter = typeof opts.auto === 'function' ? opts.auto() : generateNextValue();
   var next;
@@ -170,28 +178,26 @@ var initialise = function initialise(CstmCtr, properties, opts) {
     }
 
     var _ident = ident,
-        name = _ident.name;
+        name = _ident.name,
+        value = _ident.value;
 
-    if (dNames.has(name)) {
+    if (results.names.has(name)) {
       throw new TypeError("Attempted to reuse name: ".concat(name));
     }
 
-    dNames.set(name, ident);
-    var _ident2 = ident,
-        value = _ident2.value;
+    results.names.set(name, ident);
 
-    if (dValues.has(value)) {
-      var oName = dValues.get(value);
+    if (results.values.has(value)) {
+      var oName = results.values.get(value);
 
       if (opts.unique) {
-        var here = "".concat(name, " -> ").concat(oName);
-        throw new TypeError("Duplicate value (".concat(value, ") found: ").concat(here));
+        throw new TypeError("Duplicate value (".concat(value, ") found: ").concat(name, " -> ").concat(oName));
       }
 
-      ident = dNames.get(oName);
+      ident = results.names.get(oName);
     } else {
-      dValues.set(value, name);
-      keys.add(name);
+      results.values.set(value, name);
+      results.keys.add(name);
     }
 
     defineProperty(CstmCtr, name, {
@@ -199,11 +205,7 @@ var initialise = function initialise(CstmCtr, properties, opts) {
       value: ident
     });
   }.bind(this));
-  return {
-    keys: keys,
-    names: dNames,
-    values: dValues
-  };
+  return results;
 };
 /**
  * Get a string representation of the enum.
@@ -226,6 +228,145 @@ var calcString = function calcString(ctrName, names) {
   return "".concat(ctrName, " { ").concat(join.call(strArr, ', '), " }");
 };
 
+var definePrototype = function definePrototype(constructionProps) {
+  constructionProps.CstmCtr.prototype = objectCreate(Enum.prototype);
+  defineProperties(constructionProps.CstmCtr.prototype, {
+    constructor: {
+      value: constructionProps.CstmCtr
+    },
+    name: {
+      value: constructionProps.ctrName
+    }
+  });
+};
+
+var defineIterator = function defineIterator(constructionProps) {
+  /* eslint-disable-next-line compat/compat */
+  if (typeof Symbol === 'function' && isSymbol(Symbol(''))) {
+    /* eslint-disable-next-line compat/compat */
+    defineProperty(constructionProps.CstmCtr, Symbol.iterator, {
+      value: function iterator() {
+        /* eslint-disable-next-line compat/compat */
+        var iter = constructionProps.data.keys[Symbol.iterator]();
+
+        var $next = function next() {
+          var nxt = iter.next();
+          return nxt.done ? nxt : {
+            done: false,
+            value: constructionProps.data.names.get(nxt.value)
+          };
+        };
+
+        return {
+          next: $next
+        };
+      }
+    });
+  }
+};
+
+var defineClassMethods = function defineClassMethods(constructionProps, opts) {
+  var _this3 = this;
+
+  if (isObjectLike(opts.classMethods)) {
+    arrayForEach(objectKeys(opts.classMethods), function (key) {
+      _newArrowCheck(this, _this3);
+
+      if (reserved.has(key)) {
+        throw new SyntaxError("Name is reserved: ".concat(key));
+      }
+
+      var method = opts.classMethods[key];
+
+      if (typeof method === 'function') {
+        defineProperty(constructionProps.CstmCtr, key, {
+          value: method
+        });
+        reserved.add(key);
+      }
+    }.bind(this));
+  }
+};
+
+var defineInstanceMethods = function defineInstanceMethods(constructionProps, opts) {
+  var _this4 = this;
+
+  if (isObjectLike(opts.instanceMethods)) {
+    arrayForEach(objectKeys(opts.instanceMethods), function (key) {
+      _newArrowCheck(this, _this4);
+
+      if (reserved.has(key)) {
+        throw new SyntaxError("Name is reserved: ".concat(key));
+      }
+
+      var method = opts.instanceMethods[key];
+
+      if (typeof method === 'function') {
+        defineProperty(constructionProps.CstmCtr.prototype, key, {
+          value: method
+        });
+        reserved.add(key);
+      }
+    }.bind(this));
+  }
+};
+
+var defineCstmCtr = function defineCstmCtr(constructionProps) {
+  var asString;
+  defineProperties(constructionProps.CstmCtr, {
+    forEach: {
+      value: function forEach(callback, thisArg) {
+        var _this5 = this;
+
+        constructionProps.data.keys.forEach(function (key) {
+          _newArrowCheck(this, _this5);
+
+          callback.call(thisArg, constructionProps.data.names.get(key));
+        }.bind(this));
+      }
+    },
+    toJSON: {
+      value: function toJSON() {
+        var _this6 = this;
+
+        var value = [];
+        constructionProps.data.names.forEach(function (enumMember) {
+          _newArrowCheck(this, _this6);
+
+          push.call(value, enumMember.toJSON());
+        }.bind(this));
+        return value;
+      }
+    },
+    toString: {
+      value: function toString() {
+        if (typeof asString === 'undefined') {
+          asString = calcString(constructionProps.ctrName, constructionProps.data.names);
+        }
+
+        return asString;
+      }
+    }
+  });
+};
+
+var getConstruct = function getConstruct(constructionProps) {
+  return function construct(context, args) {
+    var argsArr = _toConsumableArray(args);
+
+    if (constructionProps.data) {
+      if (isObjectLike(context) && context instanceof constructionProps.CstmCtr) {
+        throw new SyntaxError('Enum classes can’t be instantiated');
+      }
+
+      return constructionProps.data.names.get(constructionProps.data.values.get(shift.call(argsArr)));
+    }
+
+    Enum.apply(context, argsArr);
+    return context;
+  };
+};
+
 defineProperties(Enum, {
   /**
    * Creates an enumeration collection. Primary method.
@@ -237,146 +378,27 @@ defineProperties(Enum, {
    */
   create: {
     value: function create(typeName, properties, options) {
-      var _this5 = this;
-
-      var ctrName = isSymbol(typeName) === false && toStr(typeName);
-
-      if (ctrName === 'undefined' || isVarName(ctrName) === false) {
-        throw new Error("Invalid enum name: ".concat(ctrName));
-      }
-
-      var opts = isObjectLike(options) ? options : {};
-      var CstmCtr;
-      var data; // noinspection JSUnusedLocalSymbols
-
-      var construct = function construct(context, args) {
-        var argsArr = _toConsumableArray(args);
-
-        if (data) {
-          if (isObjectLike(context) && context instanceof CstmCtr) {
-            throw new SyntaxError('Enum classes can’t be instantiated');
-          }
-
-          return data.names.get(data.values.get(shift.call(argsArr)));
-        }
-
-        Enum.apply(context, argsArr);
-        return context;
+      var constructionProps = {
+        CstmCtr: null,
+        ctrName: isSymbol(typeName) === false && toStr(typeName),
+        data: null
       };
+
+      if (constructionProps.ctrName === 'undefined' || isVarName(constructionProps.ctrName) === false) {
+        throw new Error("Invalid enum name: ".concat(constructionProps.ctrName));
+      }
       /* eslint-disable-next-line no-new-func */
 
 
-      CstmCtr = Function('construct', "return function ".concat(ctrName, "(value){return construct(this,arguments)}"))(construct);
-      var asString;
-      defineProperties(CstmCtr, {
-        forEach: {
-          value: function forEach(callback, thisArg) {
-            var _this3 = this;
-
-            data.keys.forEach(function (key) {
-              _newArrowCheck(this, _this3);
-
-              callback.call(thisArg, data.names.get(key));
-            }.bind(this));
-          }
-        },
-        toJSON: {
-          value: function toJSON() {
-            var _this4 = this;
-
-            var value = [];
-            data.names.forEach(function (enumMember) {
-              _newArrowCheck(this, _this4);
-
-              push.call(value, enumMember.toJSON());
-            }.bind(this));
-            return value;
-          }
-        },
-        toString: {
-          value: function toString() {
-            if (typeof asString === 'undefined') {
-              asString = calcString(ctrName, data.names);
-            }
-
-            return asString;
-          }
-        }
-      });
-      /* eslint-disable-next-line compat/compat */
-
-      if (typeof Symbol === 'function' && isSymbol(Symbol(''))) {
-        /* eslint-disable-next-line compat/compat */
-        defineProperty(CstmCtr, Symbol.iterator, {
-          value: function iterator() {
-            /* eslint-disable-next-line compat/compat */
-            var iter = data.keys[Symbol.iterator]();
-
-            var $next = function next() {
-              var nxt = iter.next();
-              return nxt.done ? nxt : {
-                done: false,
-                value: data.names.get(nxt.value)
-              };
-            };
-
-            return {
-              next: $next
-            };
-          }
-        });
-      }
-
-      CstmCtr.prototype = objectCreate(Enum.prototype);
-      defineProperties(CstmCtr.prototype, {
-        constructor: {
-          value: CstmCtr
-        },
-        name: {
-          value: ctrName
-        }
-      });
-
-      if (isObjectLike(opts.classMethods)) {
-        arrayForEach(objectKeys(opts.classMethods), function (key) {
-          _newArrowCheck(this, _this5);
-
-          if (reserved.has(key)) {
-            throw new SyntaxError("Name is reserved: ".concat(key));
-          }
-
-          var method = opts.classMethods[key];
-
-          if (typeof method === 'function') {
-            defineProperty(CstmCtr, key, {
-              value: method
-            });
-            reserved.add(key);
-          }
-        }.bind(this));
-      }
-
-      if (isObjectLike(opts.instanceMethods)) {
-        arrayForEach(objectKeys(opts.instanceMethods), function (key) {
-          _newArrowCheck(this, _this5);
-
-          if (reserved.has(key)) {
-            throw new SyntaxError("Name is reserved: ".concat(key));
-          }
-
-          var method = opts.instanceMethods[key];
-
-          if (typeof method === 'function') {
-            defineProperty(CstmCtr.prototype, key, {
-              value: method
-            });
-            reserved.add(key);
-          }
-        }.bind(this));
-      }
-
-      data = initialise(CstmCtr, properties, opts);
-      return objectFreeze(CstmCtr);
+      constructionProps.CstmCtr = Function('construct', "return function ".concat(constructionProps.ctrName, "(value){return construct(this,arguments)}"))(getConstruct(constructionProps));
+      var opts = isObjectLike(options) ? options : {};
+      defineCstmCtr(constructionProps);
+      definePrototype(constructionProps);
+      defineIterator(constructionProps);
+      defineClassMethods(constructionProps, opts);
+      defineInstanceMethods(constructionProps, opts);
+      constructionProps.data = initialise(constructionProps.CstmCtr, properties, opts);
+      return objectFreeze(constructionProps.CstmCtr);
     }
   }
 });

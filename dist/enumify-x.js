@@ -2,13 +2,13 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-26T21:10:02.459Z",
+  "date": "2019-07-26T22:55:12.269Z",
   "describe": "",
   "description": "Enumerated type library.",
   "file": "enumify-x.js",
-  "hash": "7775adad470803d3278f",
+  "hash": "cd8f20e4d4d6fc48c0f5",
   "license": "MIT",
-  "version": "2.0.20"
+  "version": "2.0.21"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -7052,6 +7052,30 @@ var enumify_x_esm_generateNextValue = function generateNextValue() {
     }
   };
 };
+
+var enumify_x_esm_getItems = function getItems(properties) {
+  var isClone = false;
+  var items;
+
+  if (is_array_like_x_esm(properties)) {
+    items = properties;
+  } else {
+    // noinspection JSUnresolvedVariable
+    isClone = typeof properties === 'function' && properties.prototype instanceof Enum;
+
+    if (isClone) {
+      // noinspection JSUnresolvedFunction
+      items = properties.toJSON();
+    } else {
+      throw new Error('bad args');
+    }
+  }
+
+  return {
+    isClone: isClone,
+    items: items
+  };
+};
 /**
  * Initialise a new enum.
  *
@@ -7065,31 +7089,15 @@ var enumify_x_esm_generateNextValue = function generateNextValue() {
 var enumify_x_esm_initialise = function initialise(CstmCtr, properties, opts) {
   var _this = this;
 
-  /** @type {Set<string>} */
-  var keys = new SetConstructor();
-  /** @type {Map<name,object>} */
+  var results = {
+    keys: new SetConstructor(),
+    names: new MapConstructor(),
+    values: new MapConstructor()
+  };
 
-  var dNames = new MapConstructor();
-  /** @type {Map<name,*>} */
-
-  var dValues = new MapConstructor();
-  var isClone;
-  var items;
-
-  if (is_array_like_x_esm(properties)) {
-    items = properties;
-  } else {
-    // noinspection JSUnresolvedVariable
-    var isEnum = typeof properties === 'function' && properties.prototype instanceof Enum;
-
-    if (isEnum) {
-      isClone = true; // noinspection JSUnresolvedFunction
-
-      items = properties.toJSON();
-    } else {
-      throw new Error('bad args');
-    }
-  }
+  var _getItems = enumify_x_esm_getItems(properties),
+      isClone = _getItems.isClone,
+      items = _getItems.items;
 
   var iter = typeof opts.auto === 'function' ? opts.auto() : enumify_x_esm_generateNextValue();
   var next;
@@ -7107,28 +7115,26 @@ var enumify_x_esm_initialise = function initialise(CstmCtr, properties, opts) {
     }
 
     var _ident = ident,
-        name = _ident.name;
+        name = _ident.name,
+        value = _ident.value;
 
-    if (dNames.has(name)) {
+    if (results.names.has(name)) {
       throw new TypeError("Attempted to reuse name: ".concat(name));
     }
 
-    dNames.set(name, ident);
-    var _ident2 = ident,
-        value = _ident2.value;
+    results.names.set(name, ident);
 
-    if (dValues.has(value)) {
-      var oName = dValues.get(value);
+    if (results.values.has(value)) {
+      var oName = results.values.get(value);
 
       if (opts.unique) {
-        var here = "".concat(name, " -> ").concat(oName);
-        throw new TypeError("Duplicate value (".concat(value, ") found: ").concat(here));
+        throw new TypeError("Duplicate value (".concat(value, ") found: ").concat(name, " -> ").concat(oName));
       }
 
-      ident = dNames.get(oName);
+      ident = results.names.get(oName);
     } else {
-      dValues.set(value, name);
-      keys.add(name);
+      results.values.set(value, name);
+      results.keys.add(name);
     }
 
     object_define_property_x_esm(CstmCtr, name, {
@@ -7136,11 +7142,7 @@ var enumify_x_esm_initialise = function initialise(CstmCtr, properties, opts) {
       value: ident
     });
   }.bind(this));
-  return {
-    keys: keys,
-    names: dNames,
-    values: dValues
-  };
+  return results;
 };
 /**
  * Get a string representation of the enum.
@@ -7163,6 +7165,145 @@ var enumify_x_esm_calcString = function calcString(ctrName, names) {
   return "".concat(ctrName, " { ").concat(join.call(strArr, ', '), " }");
 };
 
+var enumify_x_esm_definePrototype = function definePrototype(constructionProps) {
+  constructionProps.CstmCtr.prototype = object_create_x_esm(Enum.prototype);
+  object_define_properties_x_esm(constructionProps.CstmCtr.prototype, {
+    constructor: {
+      value: constructionProps.CstmCtr
+    },
+    name: {
+      value: constructionProps.ctrName
+    }
+  });
+};
+
+var enumify_x_esm_defineIterator = function defineIterator(constructionProps) {
+  /* eslint-disable-next-line compat/compat */
+  if (typeof Symbol === 'function' && is_symbol_default()(Symbol(''))) {
+    /* eslint-disable-next-line compat/compat */
+    object_define_property_x_esm(constructionProps.CstmCtr, Symbol.iterator, {
+      value: function iterator() {
+        /* eslint-disable-next-line compat/compat */
+        var iter = constructionProps.data.keys[Symbol.iterator]();
+
+        var $next = function next() {
+          var nxt = iter.next();
+          return nxt.done ? nxt : {
+            done: false,
+            value: constructionProps.data.names.get(nxt.value)
+          };
+        };
+
+        return {
+          next: $next
+        };
+      }
+    });
+  }
+};
+
+var enumify_x_esm_defineClassMethods = function defineClassMethods(constructionProps, opts) {
+  var _this3 = this;
+
+  if (is_object_like_x_esm(opts.classMethods)) {
+    array_for_each_x_esm(object_keys_x_esm(opts.classMethods), function (key) {
+      enumify_x_esm_newArrowCheck(this, _this3);
+
+      if (reserved.has(key)) {
+        throw new SyntaxError("Name is reserved: ".concat(key));
+      }
+
+      var method = opts.classMethods[key];
+
+      if (typeof method === 'function') {
+        object_define_property_x_esm(constructionProps.CstmCtr, key, {
+          value: method
+        });
+        reserved.add(key);
+      }
+    }.bind(this));
+  }
+};
+
+var enumify_x_esm_defineInstanceMethods = function defineInstanceMethods(constructionProps, opts) {
+  var _this4 = this;
+
+  if (is_object_like_x_esm(opts.instanceMethods)) {
+    array_for_each_x_esm(object_keys_x_esm(opts.instanceMethods), function (key) {
+      enumify_x_esm_newArrowCheck(this, _this4);
+
+      if (reserved.has(key)) {
+        throw new SyntaxError("Name is reserved: ".concat(key));
+      }
+
+      var method = opts.instanceMethods[key];
+
+      if (typeof method === 'function') {
+        object_define_property_x_esm(constructionProps.CstmCtr.prototype, key, {
+          value: method
+        });
+        reserved.add(key);
+      }
+    }.bind(this));
+  }
+};
+
+var enumify_x_esm_defineCstmCtr = function defineCstmCtr(constructionProps) {
+  var asString;
+  object_define_properties_x_esm(constructionProps.CstmCtr, {
+    forEach: {
+      value: function forEach(callback, thisArg) {
+        var _this5 = this;
+
+        constructionProps.data.keys.forEach(function (key) {
+          enumify_x_esm_newArrowCheck(this, _this5);
+
+          callback.call(thisArg, constructionProps.data.names.get(key));
+        }.bind(this));
+      }
+    },
+    toJSON: {
+      value: function toJSON() {
+        var _this6 = this;
+
+        var value = [];
+        constructionProps.data.names.forEach(function (enumMember) {
+          enumify_x_esm_newArrowCheck(this, _this6);
+
+          push.call(value, enumMember.toJSON());
+        }.bind(this));
+        return value;
+      }
+    },
+    toString: {
+      value: function toString() {
+        if (typeof asString === 'undefined') {
+          asString = enumify_x_esm_calcString(constructionProps.ctrName, constructionProps.data.names);
+        }
+
+        return asString;
+      }
+    }
+  });
+};
+
+var enumify_x_esm_getConstruct = function getConstruct(constructionProps) {
+  return function construct(context, args) {
+    var argsArr = _toConsumableArray(args);
+
+    if (constructionProps.data) {
+      if (is_object_like_x_esm(context) && context instanceof constructionProps.CstmCtr) {
+        throw new SyntaxError('Enum classes can’t be instantiated');
+      }
+
+      return constructionProps.data.names.get(constructionProps.data.values.get(shift.call(argsArr)));
+    }
+
+    Enum.apply(context, argsArr);
+    return context;
+  };
+};
+
 object_define_properties_x_esm(Enum, {
   /**
    * Creates an enumeration collection. Primary method.
@@ -7174,146 +7315,27 @@ object_define_properties_x_esm(Enum, {
    */
   create: {
     value: function create(typeName, properties, options) {
-      var _this5 = this;
-
-      var ctrName = is_symbol_default()(typeName) === false && to_string_x_esm(typeName);
-
-      if (ctrName === 'undefined' || isVarName(ctrName) === false) {
-        throw new Error("Invalid enum name: ".concat(ctrName));
-      }
-
-      var opts = is_object_like_x_esm(options) ? options : {};
-      var CstmCtr;
-      var data; // noinspection JSUnusedLocalSymbols
-
-      var construct = function construct(context, args) {
-        var argsArr = _toConsumableArray(args);
-
-        if (data) {
-          if (is_object_like_x_esm(context) && context instanceof CstmCtr) {
-            throw new SyntaxError('Enum classes can’t be instantiated');
-          }
-
-          return data.names.get(data.values.get(shift.call(argsArr)));
-        }
-
-        Enum.apply(context, argsArr);
-        return context;
+      var constructionProps = {
+        CstmCtr: null,
+        ctrName: is_symbol_default()(typeName) === false && to_string_x_esm(typeName),
+        data: null
       };
+
+      if (constructionProps.ctrName === 'undefined' || isVarName(constructionProps.ctrName) === false) {
+        throw new Error("Invalid enum name: ".concat(constructionProps.ctrName));
+      }
       /* eslint-disable-next-line no-new-func */
 
 
-      CstmCtr = Function('construct', "return function ".concat(ctrName, "(value){return construct(this,arguments)}"))(construct);
-      var asString;
-      object_define_properties_x_esm(CstmCtr, {
-        forEach: {
-          value: function forEach(callback, thisArg) {
-            var _this3 = this;
-
-            data.keys.forEach(function (key) {
-              enumify_x_esm_newArrowCheck(this, _this3);
-
-              callback.call(thisArg, data.names.get(key));
-            }.bind(this));
-          }
-        },
-        toJSON: {
-          value: function toJSON() {
-            var _this4 = this;
-
-            var value = [];
-            data.names.forEach(function (enumMember) {
-              enumify_x_esm_newArrowCheck(this, _this4);
-
-              push.call(value, enumMember.toJSON());
-            }.bind(this));
-            return value;
-          }
-        },
-        toString: {
-          value: function toString() {
-            if (typeof asString === 'undefined') {
-              asString = enumify_x_esm_calcString(ctrName, data.names);
-            }
-
-            return asString;
-          }
-        }
-      });
-      /* eslint-disable-next-line compat/compat */
-
-      if (typeof Symbol === 'function' && is_symbol_default()(Symbol(''))) {
-        /* eslint-disable-next-line compat/compat */
-        object_define_property_x_esm(CstmCtr, Symbol.iterator, {
-          value: function iterator() {
-            /* eslint-disable-next-line compat/compat */
-            var iter = data.keys[Symbol.iterator]();
-
-            var $next = function next() {
-              var nxt = iter.next();
-              return nxt.done ? nxt : {
-                done: false,
-                value: data.names.get(nxt.value)
-              };
-            };
-
-            return {
-              next: $next
-            };
-          }
-        });
-      }
-
-      CstmCtr.prototype = object_create_x_esm(Enum.prototype);
-      object_define_properties_x_esm(CstmCtr.prototype, {
-        constructor: {
-          value: CstmCtr
-        },
-        name: {
-          value: ctrName
-        }
-      });
-
-      if (is_object_like_x_esm(opts.classMethods)) {
-        array_for_each_x_esm(object_keys_x_esm(opts.classMethods), function (key) {
-          enumify_x_esm_newArrowCheck(this, _this5);
-
-          if (reserved.has(key)) {
-            throw new SyntaxError("Name is reserved: ".concat(key));
-          }
-
-          var method = opts.classMethods[key];
-
-          if (typeof method === 'function') {
-            object_define_property_x_esm(CstmCtr, key, {
-              value: method
-            });
-            reserved.add(key);
-          }
-        }.bind(this));
-      }
-
-      if (is_object_like_x_esm(opts.instanceMethods)) {
-        array_for_each_x_esm(object_keys_x_esm(opts.instanceMethods), function (key) {
-          enumify_x_esm_newArrowCheck(this, _this5);
-
-          if (reserved.has(key)) {
-            throw new SyntaxError("Name is reserved: ".concat(key));
-          }
-
-          var method = opts.instanceMethods[key];
-
-          if (typeof method === 'function') {
-            object_define_property_x_esm(CstmCtr.prototype, key, {
-              value: method
-            });
-            reserved.add(key);
-          }
-        }.bind(this));
-      }
-
-      data = enumify_x_esm_initialise(CstmCtr, properties, opts);
-      return objectFreeze(CstmCtr);
+      constructionProps.CstmCtr = Function('construct', "return function ".concat(constructionProps.ctrName, "(value){return construct(this,arguments)}"))(enumify_x_esm_getConstruct(constructionProps));
+      var opts = is_object_like_x_esm(options) ? options : {};
+      enumify_x_esm_defineCstmCtr(constructionProps);
+      enumify_x_esm_definePrototype(constructionProps);
+      enumify_x_esm_defineIterator(constructionProps);
+      enumify_x_esm_defineClassMethods(constructionProps, opts);
+      enumify_x_esm_defineInstanceMethods(constructionProps, opts);
+      constructionProps.data = enumify_x_esm_initialise(constructionProps.CstmCtr, properties, opts);
+      return objectFreeze(constructionProps.CstmCtr);
     }
   }
 });
