@@ -1,24 +1,35 @@
+import arrayForEach from 'array-for-each-x';
+import {MapConstructor, SetConstructor} from 'collections-x';
 import isArrayLike from 'is-array-like-x';
 import isObjectLike from 'is-object-like-x';
 import isSafeInteger from 'is-safe-integer-x';
-import isVarName from 'is-var-name';
 import isSymbol from 'is-symbol';
-import {SetConstructor, MapConstructor} from 'collections-x';
-import objectKeys from 'object-keys-x';
+import isVarName from 'is-var-name';
+import {stringify} from 'json3';
+import objectCreate from 'object-create-x';
 import defineProperties from 'object-define-properties-x';
 import defineProperty from 'object-define-property-x';
-import objectCreate from 'object-create-x';
-import arrayForEach from 'array-for-each-x';
+import objectKeys from 'object-keys-x';
 import toStr from 'to-string-x';
-import {stringify} from 'json3';
 
 const {push, join, shift} = [];
 const nativeFreeze = {}.constructor.freeze;
 const hasFreeze = typeof nativeFreeze === 'function';
+
+/**
+ * The freeze() method freezes an object. A frozen object can no longer be changed; freezing an object prevents new properties
+ * from being added to it, existing properties from being removed, prevents changing the enumerability, configurability,
+ * or writability of existing properties, and prevents the values of existing properties from being changed. In addition,
+ * freezing an object also prevents its prototype from being changed. Freeze() returns the same object that was passed in.
+ *
+ * @param {*} value - The object to freeze.
+ * @returns {*} - The object that was passed to the function.
+ */
 const objectFreeze = function freeze(value) {
   return hasFreeze ? nativeFreeze(value) : value;
 };
 
+/** @type {Set<string>} */
 const reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'value', 'valueOf']);
 
 /**
@@ -73,9 +84,15 @@ defineProperties(Enum.prototype, {
   },
 });
 
+/**
+ * Generate an iterator.
+ *
+ * @returns {Iterator} - An iterator.
+ */
 const generateNextValue = function generateNextValue() {
   let count = 0;
 
+  // noinspection JSValidateTypes
   return {
     next(name, value) {
       if (isSafeInteger(value)) {
@@ -91,26 +108,43 @@ const generateNextValue = function generateNextValue() {
   };
 };
 
+/**
+ * Initialise a new enum.
+ *
+ * @param {Function} CstmCtr - The custom constructor.
+ * @param {Array|Enum} properties - The properties.
+ * @param {!object} opts - The options.
+ * @returns {{names: Map<name,object>, keys: Set<string>, values: Map<name,*>}} - Initialised variables.
+ */
 const initialise = function initialise(CstmCtr, properties, opts) {
+  /** @type {Set<string>} */
   const keys = new SetConstructor();
+  /** @type {Map<name,object>} */
   const dNames = new MapConstructor();
+  /** @type {Map<name,*>} */
   const dValues = new MapConstructor();
   let isClone;
   let items;
 
   if (isArrayLike(properties)) {
     items = properties;
-  } else if (typeof properties === 'function' && properties.prototype instanceof Enum) {
-    isClone = true;
-    items = properties.toJSON();
   } else {
-    throw new Error('bad args');
+    // noinspection JSUnresolvedVariable
+    const isEnum = typeof properties === 'function' && properties.prototype instanceof Enum;
+
+    if (isEnum) {
+      isClone = true;
+      // noinspection JSUnresolvedFunction
+      items = properties.toJSON();
+    } else {
+      throw new Error('bad args');
+    }
   }
 
   const iter = typeof opts.auto === 'function' ? opts.auto() : generateNextValue();
   let next;
 
-  const itemsIteratee = function itemsIteratee(item) {
+  arrayForEach(items, (item) => {
     let ident;
 
     if (isClone || isObjectLike(item)) {
@@ -149,9 +183,7 @@ const initialise = function initialise(CstmCtr, properties, opts) {
       enumerable: true,
       value: ident,
     });
-  };
-
-  arrayForEach(items, itemsIteratee);
+  });
 
   return {
     keys,
@@ -160,6 +192,13 @@ const initialise = function initialise(CstmCtr, properties, opts) {
   };
 };
 
+/**
+ * Get a string representation of the enum.
+ *
+ * @param {string} ctrName - The constructor name.
+ * @param {Map} names - The dnames map.
+ * @returns {string} - The string representation.
+ */
 const calcString = function calcString(ctrName, names) {
   const strArr = [];
   names.forEach((enumMember) => {

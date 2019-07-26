@@ -8,29 +8,40 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
 
+import arrayForEach from 'array-for-each-x';
+import { MapConstructor, SetConstructor } from 'collections-x';
 import isArrayLike from 'is-array-like-x';
 import isObjectLike from 'is-object-like-x';
 import isSafeInteger from 'is-safe-integer-x';
-import isVarName from 'is-var-name';
 import isSymbol from 'is-symbol';
-import { SetConstructor, MapConstructor } from 'collections-x';
-import objectKeys from 'object-keys-x';
+import isVarName from 'is-var-name';
+import { stringify } from 'json3';
+import objectCreate from 'object-create-x';
 import defineProperties from 'object-define-properties-x';
 import defineProperty from 'object-define-property-x';
-import objectCreate from 'object-create-x';
-import arrayForEach from 'array-for-each-x';
+import objectKeys from 'object-keys-x';
 import toStr from 'to-string-x';
-import { stringify } from 'json3';
 var _ref = [],
     push = _ref.push,
     join = _ref.join,
     shift = _ref.shift;
 var nativeFreeze = {}.constructor.freeze;
 var hasFreeze = typeof nativeFreeze === 'function';
+/**
+ * The freeze() method freezes an object. A frozen object can no longer be changed; freezing an object prevents new properties
+ * from being added to it, existing properties from being removed, prevents changing the enumerability, configurability,
+ * or writability of existing properties, and prevents the values of existing properties from being changed. In addition,
+ * freezing an object also prevents its prototype from being changed. Freeze() returns the same object that was passed in.
+ *
+ * @param {*} value - The object to freeze.
+ * @returns {*} - The object that was passed to the function.
+ */
 
 var objectFreeze = function freeze(value) {
   return hasFreeze ? nativeFreeze(value) : value;
 };
+/** @type {Set<string>} */
+
 
 var reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'value', 'valueOf']);
 /**
@@ -83,9 +94,15 @@ defineProperties(Enum.prototype, {
     }
   }
 });
+/**
+ * Generate an iterator.
+ *
+ * @returns {Iterator} - An iterator.
+ */
 
 var generateNextValue = function generateNextValue() {
-  var count = 0;
+  var count = 0; // noinspection JSValidateTypes
+
   return {
     next: function next(name, value) {
       if (isSafeInteger(value)) {
@@ -98,27 +115,50 @@ var generateNextValue = function generateNextValue() {
     }
   };
 };
+/**
+ * Initialise a new enum.
+ *
+ * @param {Function} CstmCtr - The custom constructor.
+ * @param {Array|Enum} properties - The properties.
+ * @param {!object} opts - The options.
+ * @returns {{names: Map<name,object>, keys: Set<string>, values: Map<name,*>}} - Initialised variables.
+ */
+
 
 var initialise = function initialise(CstmCtr, properties, opts) {
+  var _this = this;
+
+  /** @type {Set<string>} */
   var keys = new SetConstructor();
+  /** @type {Map<name,object>} */
+
   var dNames = new MapConstructor();
+  /** @type {Map<name,*>} */
+
   var dValues = new MapConstructor();
   var isClone;
   var items;
 
   if (isArrayLike(properties)) {
     items = properties;
-  } else if (typeof properties === 'function' && properties.prototype instanceof Enum) {
-    isClone = true;
-    items = properties.toJSON();
   } else {
-    throw new Error('bad args');
+    // noinspection JSUnresolvedVariable
+    var isEnum = typeof properties === 'function' && properties.prototype instanceof Enum;
+
+    if (isEnum) {
+      isClone = true; // noinspection JSUnresolvedFunction
+
+      items = properties.toJSON();
+    } else {
+      throw new Error('bad args');
+    }
   }
 
   var iter = typeof opts.auto === 'function' ? opts.auto() : generateNextValue();
   var next;
+  arrayForEach(items, function (item) {
+    _newArrowCheck(this, _this);
 
-  var itemsIteratee = function itemsIteratee(item) {
     var ident;
 
     if (isClone || isObjectLike(item)) {
@@ -158,22 +198,28 @@ var initialise = function initialise(CstmCtr, properties, opts) {
       enumerable: true,
       value: ident
     });
-  };
-
-  arrayForEach(items, itemsIteratee);
+  }.bind(this));
   return {
     keys: keys,
     names: dNames,
     values: dValues
   };
 };
+/**
+ * Get a string representation of the enum.
+ *
+ * @param {string} ctrName - The constructor name.
+ * @param {Map} names - The dnames map.
+ * @returns {string} - The string representation.
+ */
+
 
 var calcString = function calcString(ctrName, names) {
-  var _this = this;
+  var _this2 = this;
 
   var strArr = [];
   names.forEach(function (enumMember) {
-    _newArrowCheck(this, _this);
+    _newArrowCheck(this, _this2);
 
     push.call(strArr, stringify(enumMember.name));
   }.bind(this));
@@ -191,7 +237,7 @@ defineProperties(Enum, {
    */
   create: {
     value: function create(typeName, properties, options) {
-      var _this4 = this;
+      var _this5 = this;
 
       var ctrName = isSymbol(typeName) === false && toStr(typeName);
 
@@ -225,10 +271,10 @@ defineProperties(Enum, {
       defineProperties(CstmCtr, {
         forEach: {
           value: function forEach(callback, thisArg) {
-            var _this2 = this;
+            var _this3 = this;
 
             data.keys.forEach(function (key) {
-              _newArrowCheck(this, _this2);
+              _newArrowCheck(this, _this3);
 
               callback.call(thisArg, data.names.get(key));
             }.bind(this));
@@ -236,11 +282,11 @@ defineProperties(Enum, {
         },
         toJSON: {
           value: function toJSON() {
-            var _this3 = this;
+            var _this4 = this;
 
             var value = [];
             data.names.forEach(function (enumMember) {
-              _newArrowCheck(this, _this3);
+              _newArrowCheck(this, _this4);
 
               push.call(value, enumMember.toJSON());
             }.bind(this));
@@ -293,7 +339,7 @@ defineProperties(Enum, {
 
       if (isObjectLike(opts.classMethods)) {
         arrayForEach(objectKeys(opts.classMethods), function (key) {
-          _newArrowCheck(this, _this4);
+          _newArrowCheck(this, _this5);
 
           if (reserved.has(key)) {
             throw new SyntaxError("Name is reserved: ".concat(key));
@@ -312,7 +358,7 @@ defineProperties(Enum, {
 
       if (isObjectLike(opts.instanceMethods)) {
         arrayForEach(objectKeys(opts.instanceMethods), function (key) {
-          _newArrowCheck(this, _this4);
+          _newArrowCheck(this, _this5);
 
           if (reserved.has(key)) {
             throw new SyntaxError("Name is reserved: ".concat(key));
