@@ -84,11 +84,6 @@ defineProperties(Enum.prototype, {
   },
 });
 
-/**
- * Generate an iterator.
- *
- * @returns {Iterator} - An iterator.
- */
 const generateNextValue = function generateNextValue() {
   let count = 0;
 

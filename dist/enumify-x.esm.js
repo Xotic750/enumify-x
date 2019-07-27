@@ -94,11 +94,6 @@ defineProperties(Enum.prototype, {
     }
   }
 });
-/**
- * Generate an iterator.
- *
- * @returns {Iterator} - An iterator.
- */
 
 var generateNextValue = function generateNextValue() {
   var count = 0; // noinspection JSValidateTypes

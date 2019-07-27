@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-07-27T15:37:29.486Z",
+  "date": "2019-07-27T22:25:17.462Z",
   "describe": "",
   "description": "Enumerated type library.",
   "file": "enumify-x.js",
-  "hash": "7164f04fc2e27671f5b4",
+  "hash": "3e007622c84a7c5b82cf",
   "license": "MIT",
   "version": "2.0.22"
 }
@@ -6969,11 +6969,6 @@ object_define_properties_x_esm(Enum.prototype, {
     }
   }
 });
-/**
- * Generate an iterator.
- *
- * @returns {Iterator} - An iterator.
- */
 
 var enumify_x_esm_generateNextValue = function generateNextValue() {
   var count = 0; // noinspection JSValidateTypes
