@@ -32,6 +32,14 @@ const objectFreeze = function freeze(value) {
 /** @type {Set<string>} */
 const reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'value', 'valueOf']);
 
+const assertReserved = function assertReserved(strName) {
+  if (reserved.has(strName)) {
+    throw new SyntaxError(`Name is reserved: ${strName}`);
+  }
+
+  return strName;
+};
+
 /**
  * An enumeration is a set of symbolic names (members) bound to unique, constant
  * values. Within an enumeration, the members can be compared by identity, and
@@ -47,11 +55,7 @@ const reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'v
  */
 export default function Enum(name, value) {
   if (arguments.length > 0) {
-    const strName = isSymbol(name) === false && toStr(name);
-
-    if (reserved.has(strName)) {
-      throw new SyntaxError(`Name is reserved: ${strName}`);
-    }
+    const strName = assertReserved(isSymbol(name) === false && toStr(name));
 
     defineProperties(this, {
       name: {
@@ -103,27 +107,54 @@ const generateNextValue = function generateNextValue() {
   };
 };
 
-const getItems = function getItems(properties) {
-  let isClone = false;
-  let items;
-
-  if (isArrayLike(properties)) {
-    items = properties;
-  } else {
-    // noinspection JSUnresolvedVariable
-    isClone = typeof properties === 'function' && properties.prototype instanceof Enum;
-
-    if (isClone) {
-      // noinspection JSUnresolvedFunction
-      items = properties.toJSON();
-    } else {
-      throw new Error('bad args');
-    }
+const getItemsObject = function getItemsObject(isClone, properties) {
+  if (isClone) {
+    return properties.toJSON();
   }
+
+  throw new Error('bad args');
+};
+
+const getItems = function getItems(properties) {
+  if (isArrayLike(properties)) {
+    return {
+      isClone: false,
+      items: properties,
+    };
+  }
+
+  const isClone = typeof properties === 'function' && properties.prototype instanceof Enum;
 
   return {
     isClone,
-    items,
+    items: getItemsObject(isClone, properties),
+  };
+};
+
+const assertReuse = function assertReuse(results, name) {
+  if (results.names.has(name)) {
+    throw new TypeError(`Attempted to reuse name: ${name}`);
+  }
+
+  return results;
+};
+
+const getIdent = function getIdent(obj) {
+  const {results, value, name, opts} = obj;
+  const oName = results.values.get(value);
+
+  if (opts.unique) {
+    throw new TypeError(`Duplicate value (${value}) found: ${name} -> ${oName}`);
+  }
+
+  return results.names.get(oName);
+};
+
+const initResults = function initResults() {
+  return {
+    keys: new SetConstructor(),
+    names: new MapConstructor(),
+    values: new MapConstructor(),
   };
 };
 
@@ -138,17 +169,13 @@ const getItems = function getItems(properties) {
  */
 const initialise = function initialise(obj) {
   const {CstmCtr, properties, opts} = obj;
-  const results = {
-    keys: new SetConstructor(),
-    names: new MapConstructor(),
-    values: new MapConstructor(),
-  };
+  const results = initResults();
 
   const {isClone, items} = getItems(properties);
   const iter = typeof opts.auto === 'function' ? opts.auto() : generateNextValue();
   let next;
 
-  arrayForEach(items, (item) => {
+  arrayForEach(items, function iteratee(item) {
     let ident;
 
     if (isClone || isObjectLike(item)) {
@@ -160,21 +187,10 @@ const initialise = function initialise(obj) {
     }
 
     const {name, value} = ident;
-
-    if (results.names.has(name)) {
-      throw new TypeError(`Attempted to reuse name: ${name}`);
-    }
-
-    results.names.set(name, ident);
+    assertReuse(results, name).names.set(name, ident);
 
     if (results.values.has(value)) {
-      const oName = results.values.get(value);
-
-      if (opts.unique) {
-        throw new TypeError(`Duplicate value (${value}) found: ${name} -> ${oName}`);
-      }
-
-      ident = results.names.get(oName);
+      ident = getIdent({results, value, name, opts});
     } else {
       results.values.set(value, name);
       results.keys.add(name);
@@ -198,7 +214,7 @@ const initialise = function initialise(obj) {
  */
 const calcString = function calcString(ctrName, names) {
   const strArr = [];
-  names.forEach((enumMember) => {
+  names.forEach(function iteratee(enumMember) {
     push.call(strArr, stringify(enumMember.name));
   });
 
@@ -213,6 +229,19 @@ const definePrototype = function definePrototype(constructionProps) {
   });
 };
 
+const getNext = function getNext(iter, constructionProps) {
+  return function next() {
+    const nxt = iter.next();
+
+    return nxt.done
+      ? nxt
+      : {
+          done: false,
+          value: constructionProps.data.names.get(nxt.value),
+        };
+  };
+};
+
 const defineIterator = function defineIterator(constructionProps) {
   /* eslint-disable-next-line compat/compat */
   if (typeof Symbol === 'function' && isSymbol(Symbol(''))) {
@@ -221,19 +250,9 @@ const defineIterator = function defineIterator(constructionProps) {
       value: function iterator() {
         /* eslint-disable-next-line compat/compat */
         const iter = constructionProps.data.keys[Symbol.iterator]();
-        const $next = function next() {
-          const nxt = iter.next();
-
-          return nxt.done
-            ? nxt
-            : {
-                done: false,
-                value: constructionProps.data.names.get(nxt.value),
-              };
-        };
 
         return {
-          next: $next,
+          next: getNext(iter, constructionProps),
         };
       },
     });
@@ -242,7 +261,7 @@ const defineIterator = function defineIterator(constructionProps) {
 
 const defineClassMethods = function defineClassMethods(constructionProps, opts) {
   if (isObjectLike(opts.classMethods)) {
-    arrayForEach(objectKeys(opts.classMethods), (key) => {
+    arrayForEach(objectKeys(opts.classMethods), function iteratee(key) {
       if (reserved.has(key)) {
         throw new SyntaxError(`Name is reserved: ${key}`);
       }
@@ -259,7 +278,7 @@ const defineClassMethods = function defineClassMethods(constructionProps, opts) 
 
 const defineInstanceMethods = function defineInstanceMethods(constructionProps, opts) {
   if (isObjectLike(opts.instanceMethods)) {
-    arrayForEach(objectKeys(opts.instanceMethods), (key) => {
+    arrayForEach(objectKeys(opts.instanceMethods), function iteratee(key) {
       if (reserved.has(key)) {
         throw new SyntaxError(`Name is reserved: ${key}`);
       }
@@ -279,7 +298,7 @@ const defineCstmCtr = function defineCstmCtr(constructionProps) {
   defineProperties(constructionProps.CstmCtr, {
     forEach: {
       value: function forEach(callback, thisArg) {
-        constructionProps.data.keys.forEach((key) => {
+        constructionProps.data.keys.forEach(function iteratee(key) {
           callback.call(thisArg, constructionProps.data.names.get(key));
         });
       },
@@ -288,7 +307,7 @@ const defineCstmCtr = function defineCstmCtr(constructionProps) {
     toJSON: {
       value: function toJSON() {
         const value = [];
-        constructionProps.data.names.forEach((enumMember) => {
+        constructionProps.data.names.forEach(function iteratee(enumMember) {
           push.call(value, enumMember.toJSON());
         });
 
@@ -326,6 +345,20 @@ const getConstruct = function getConstruct(constructionProps) {
   };
 };
 
+const getConstructionProps = function getConstructionProps(typeName) {
+  const props = {
+    CstmCtr: null,
+    ctrName: isSymbol(typeName) === false && toStr(typeName),
+    data: null,
+  };
+
+  if (props.ctrName === 'undefined' || isVarName(props.ctrName) === false) {
+    throw new Error(`Invalid enum name: ${props.ctrName}`);
+  }
+
+  return props;
+};
+
 defineProperties(Enum, {
   /**
    * Creates an enumeration collection. Primary method.
@@ -337,15 +370,7 @@ defineProperties(Enum, {
    */
   create: {
     value: function create(typeName, properties, options) {
-      const constructionProps = {
-        CstmCtr: null,
-        ctrName: isSymbol(typeName) === false && toStr(typeName),
-        data: null,
-      };
-
-      if (constructionProps.ctrName === 'undefined' || isVarName(constructionProps.ctrName) === false) {
-        throw new Error(`Invalid enum name: ${constructionProps.ctrName}`);
-      }
+      const constructionProps = getConstructionProps(typeName);
 
       /* eslint-disable-next-line no-new-func */
       constructionProps.CstmCtr = Function(
