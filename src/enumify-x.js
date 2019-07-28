@@ -130,12 +130,14 @@ const getItems = function getItems(properties) {
 /**
  * Initialise a new enum.
  *
- * @param {Function} CstmCtr - The custom constructor.
- * @param {Array|Enum} properties - The properties.
- * @param {!object} opts - The options.
+ * @param {object} obj - Parameter for initialisation.
+ * @property {Function} obj.CstmCtr - The custom constructor.
+ * @property {Array|Enum} obj.properties - The properties.
+ * @property {!object} obj.opts - The options.
  * @returns {{names: Map<name,object>, keys: Set<string>, values: Map<name,*>}} - Initialised variables.
  */
-const initialise = function initialise(CstmCtr, properties, opts) {
+const initialise = function initialise(obj) {
+  const {CstmCtr, properties, opts} = obj;
   const results = {
     keys: new SetConstructor(),
     names: new MapConstructor(),
@@ -357,7 +359,7 @@ defineProperties(Enum, {
       defineIterator(constructionProps);
       defineClassMethods(constructionProps, opts);
       defineInstanceMethods(constructionProps, opts);
-      constructionProps.data = initialise(constructionProps.CstmCtr, properties, opts);
+      constructionProps.data = initialise({CstmCtr: constructionProps.CstmCtr, properties, opts});
 
       return objectFreeze(constructionProps.CstmCtr);
     },
