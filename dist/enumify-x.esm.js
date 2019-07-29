@@ -6,8 +6,6 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
-function _newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
-
 import arrayForEach from 'array-for-each-x';
 import { MapConstructor, SetConstructor } from 'collections-x';
 import isArrayLike from 'is-array-like-x';
@@ -44,6 +42,14 @@ var objectFreeze = function freeze(value) {
 
 
 var reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'value', 'valueOf']);
+
+var assertReserved = function assertReserved(strName) {
+  if (reserved.has(strName)) {
+    throw new SyntaxError("Name is reserved: ".concat(strName));
+  }
+
+  return strName;
+};
 /**
  * An enumeration is a set of symbolic names (members) bound to unique, constant
  * values. Within an enumeration, the members can be compared by identity, and
@@ -58,14 +64,10 @@ var reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'val
  * @returns {object} The enum.
  */
 
+
 export default function Enum(name, value) {
   if (arguments.length > 0) {
-    var strName = isSymbol(name) === false && toStr(name);
-
-    if (reserved.has(strName)) {
-      throw new SyntaxError("Name is reserved: ".concat(strName));
-    }
-
+    var strName = assertReserved(isSymbol(name) === false && toStr(name));
     defineProperties(this, {
       name: {
         enumerable: true,
@@ -111,47 +113,74 @@ var generateNextValue = function generateNextValue() {
   };
 };
 
-var getItems = function getItems(properties) {
-  var isClone = false;
-  var items;
-
-  if (isArrayLike(properties)) {
-    items = properties;
-  } else {
-    // noinspection JSUnresolvedVariable
-    isClone = typeof properties === 'function' && properties.prototype instanceof Enum;
-
-    if (isClone) {
-      // noinspection JSUnresolvedFunction
-      items = properties.toJSON();
-    } else {
-      throw new Error('bad args');
-    }
+var getItemsObject = function getItemsObject(isClone, properties) {
+  if (isClone) {
+    return properties.toJSON();
   }
 
+  throw new Error('bad args');
+};
+
+var getItems = function getItems(properties) {
+  if (isArrayLike(properties)) {
+    return {
+      isClone: false,
+      items: properties
+    };
+  }
+
+  var isClone = typeof properties === 'function' && properties.prototype instanceof Enum;
   return {
     isClone: isClone,
-    items: items
+    items: getItemsObject(isClone, properties)
+  };
+};
+
+var assertReuse = function assertReuse(results, name) {
+  if (results.names.has(name)) {
+    throw new TypeError("Attempted to reuse name: ".concat(name));
+  }
+
+  return results;
+};
+
+var getIdent = function getIdent(obj) {
+  var results = obj.results,
+      value = obj.value,
+      name = obj.name,
+      opts = obj.opts;
+  var oName = results.values.get(value);
+
+  if (opts.unique) {
+    throw new TypeError("Duplicate value (".concat(value, ") found: ").concat(name, " -> ").concat(oName));
+  }
+
+  return results.names.get(oName);
+};
+
+var initResults = function initResults() {
+  return {
+    keys: new SetConstructor(),
+    names: new MapConstructor(),
+    values: new MapConstructor()
   };
 };
 /**
  * Initialise a new enum.
  *
- * @param {Function} CstmCtr - The custom constructor.
- * @param {Array|Enum} properties - The properties.
- * @param {!object} opts - The options.
+ * @param {object} obj - Parameter for initialisation.
+ * @property {Function} obj.CstmCtr - The custom constructor.
+ * @property {Array|Enum} obj.properties - The properties.
+ * @property {!object} obj.opts - The options.
  * @returns {{names: Map<name,object>, keys: Set<string>, values: Map<name,*>}} - Initialised variables.
  */
 
 
-var initialise = function initialise(CstmCtr, properties, opts) {
-  var _this = this;
-
-  var results = {
-    keys: new SetConstructor(),
-    names: new MapConstructor(),
-    values: new MapConstructor()
-  };
+var initialise = function initialise(obj) {
+  var CstmCtr = obj.CstmCtr,
+      properties = obj.properties,
+      opts = obj.opts;
+  var results = initResults();
 
   var _getItems = getItems(properties),
       isClone = _getItems.isClone,
@@ -159,9 +188,7 @@ var initialise = function initialise(CstmCtr, properties, opts) {
 
   var iter = typeof opts.auto === 'function' ? opts.auto() : generateNextValue();
   var next;
-  arrayForEach(items, function (item) {
-    _newArrowCheck(this, _this);
-
+  arrayForEach(items, function iteratee(item) {
     var ident;
 
     if (isClone || isObjectLike(item)) {
@@ -175,21 +202,15 @@ var initialise = function initialise(CstmCtr, properties, opts) {
     var _ident = ident,
         name = _ident.name,
         value = _ident.value;
-
-    if (results.names.has(name)) {
-      throw new TypeError("Attempted to reuse name: ".concat(name));
-    }
-
-    results.names.set(name, ident);
+    assertReuse(results, name).names.set(name, ident);
 
     if (results.values.has(value)) {
-      var oName = results.values.get(value);
-
-      if (opts.unique) {
-        throw new TypeError("Duplicate value (".concat(value, ") found: ").concat(name, " -> ").concat(oName));
-      }
-
-      ident = results.names.get(oName);
+      ident = getIdent({
+        results: results,
+        value: value,
+        name: name,
+        opts: opts
+      });
     } else {
       results.values.set(value, name);
       results.keys.add(name);
@@ -199,7 +220,7 @@ var initialise = function initialise(CstmCtr, properties, opts) {
       enumerable: true,
       value: ident
     });
-  }.bind(this));
+  });
   return results;
 };
 /**
@@ -212,14 +233,10 @@ var initialise = function initialise(CstmCtr, properties, opts) {
 
 
 var calcString = function calcString(ctrName, names) {
-  var _this2 = this;
-
   var strArr = [];
-  names.forEach(function (enumMember) {
-    _newArrowCheck(this, _this2);
-
+  names.forEach(function iteratee(enumMember) {
     push.call(strArr, stringify(enumMember.name));
-  }.bind(this));
+  });
   return "".concat(ctrName, " { ").concat(join.call(strArr, ', '), " }");
 };
 
@@ -235,6 +252,16 @@ var definePrototype = function definePrototype(constructionProps) {
   });
 };
 
+var getNext = function getNext(iter, constructionProps) {
+  return function next() {
+    var nxt = iter.next();
+    return nxt.done ? nxt : {
+      done: false,
+      value: constructionProps.data.names.get(nxt.value)
+    };
+  };
+};
+
 var defineIterator = function defineIterator(constructionProps) {
   /* eslint-disable-next-line compat/compat */
   if (typeof Symbol === 'function' && isSymbol(Symbol(''))) {
@@ -243,17 +270,8 @@ var defineIterator = function defineIterator(constructionProps) {
       value: function iterator() {
         /* eslint-disable-next-line compat/compat */
         var iter = constructionProps.data.keys[Symbol.iterator]();
-
-        var $next = function next() {
-          var nxt = iter.next();
-          return nxt.done ? nxt : {
-            done: false,
-            value: constructionProps.data.names.get(nxt.value)
-          };
-        };
-
         return {
-          next: $next
+          next: getNext(iter, constructionProps)
         };
       }
     });
@@ -261,12 +279,8 @@ var defineIterator = function defineIterator(constructionProps) {
 };
 
 var defineClassMethods = function defineClassMethods(constructionProps, opts) {
-  var _this3 = this;
-
   if (isObjectLike(opts.classMethods)) {
-    arrayForEach(objectKeys(opts.classMethods), function (key) {
-      _newArrowCheck(this, _this3);
-
+    arrayForEach(objectKeys(opts.classMethods), function iteratee(key) {
       if (reserved.has(key)) {
         throw new SyntaxError("Name is reserved: ".concat(key));
       }
@@ -279,17 +293,13 @@ var defineClassMethods = function defineClassMethods(constructionProps, opts) {
         });
         reserved.add(key);
       }
-    }.bind(this));
+    });
   }
 };
 
 var defineInstanceMethods = function defineInstanceMethods(constructionProps, opts) {
-  var _this4 = this;
-
   if (isObjectLike(opts.instanceMethods)) {
-    arrayForEach(objectKeys(opts.instanceMethods), function (key) {
-      _newArrowCheck(this, _this4);
-
+    arrayForEach(objectKeys(opts.instanceMethods), function iteratee(key) {
       if (reserved.has(key)) {
         throw new SyntaxError("Name is reserved: ".concat(key));
       }
@@ -302,7 +312,7 @@ var defineInstanceMethods = function defineInstanceMethods(constructionProps, op
         });
         reserved.add(key);
       }
-    }.bind(this));
+    });
   }
 };
 
@@ -311,25 +321,17 @@ var defineCstmCtr = function defineCstmCtr(constructionProps) {
   defineProperties(constructionProps.CstmCtr, {
     forEach: {
       value: function forEach(callback, thisArg) {
-        var _this5 = this;
-
-        constructionProps.data.keys.forEach(function (key) {
-          _newArrowCheck(this, _this5);
-
+        constructionProps.data.keys.forEach(function iteratee(key) {
           callback.call(thisArg, constructionProps.data.names.get(key));
-        }.bind(this));
+        });
       }
     },
     toJSON: {
       value: function toJSON() {
-        var _this6 = this;
-
         var value = [];
-        constructionProps.data.names.forEach(function (enumMember) {
-          _newArrowCheck(this, _this6);
-
+        constructionProps.data.names.forEach(function iteratee(enumMember) {
           push.call(value, enumMember.toJSON());
-        }.bind(this));
+        });
         return value;
       }
     },
@@ -362,6 +364,20 @@ var getConstruct = function getConstruct(constructionProps) {
   };
 };
 
+var getConstructionProps = function getConstructionProps(typeName) {
+  var props = {
+    CstmCtr: null,
+    ctrName: isSymbol(typeName) === false && toStr(typeName),
+    data: null
+  };
+
+  if (props.ctrName === 'undefined' || isVarName(props.ctrName) === false) {
+    throw new Error("Invalid enum name: ".concat(props.ctrName));
+  }
+
+  return props;
+};
+
 defineProperties(Enum, {
   /**
    * Creates an enumeration collection. Primary method.
@@ -373,17 +389,8 @@ defineProperties(Enum, {
    */
   create: {
     value: function create(typeName, properties, options) {
-      var constructionProps = {
-        CstmCtr: null,
-        ctrName: isSymbol(typeName) === false && toStr(typeName),
-        data: null
-      };
-
-      if (constructionProps.ctrName === 'undefined' || isVarName(constructionProps.ctrName) === false) {
-        throw new Error("Invalid enum name: ".concat(constructionProps.ctrName));
-      }
+      var constructionProps = getConstructionProps(typeName);
       /* eslint-disable-next-line no-new-func */
-
 
       constructionProps.CstmCtr = Function('construct', "return function ".concat(constructionProps.ctrName, "(value){return construct(this,arguments)}"))(getConstruct(constructionProps));
       var opts = isObjectLike(options) ? options : {};
@@ -392,7 +399,11 @@ defineProperties(Enum, {
       defineIterator(constructionProps);
       defineClassMethods(constructionProps, opts);
       defineInstanceMethods(constructionProps, opts);
-      constructionProps.data = initialise(constructionProps.CstmCtr, properties, opts);
+      constructionProps.data = initialise({
+        CstmCtr: constructionProps.CstmCtr,
+        properties: properties,
+        opts: opts
+      });
       return objectFreeze(constructionProps.CstmCtr);
     }
   }
