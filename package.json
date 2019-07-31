@@ -1,6 +1,6 @@
 {
   "name": "enumify-x",
-  "version": "2.0.22",
+  "version": "2.0.23",
   "description": "Enumerated type library.",
   "homepage": "https://github.com/Xotic750/enumify-x.git",
   "author": {
@@ -49,19 +49,19 @@
     "url": "https://github.com/Xotic750/enumify-x/issues"
   },
   "dependencies": {
-    "array-for-each-x": "^3.0.19",
-    "collections-x": "^3.0.12",
-    "is-array-like-x": "^2.0.17",
-    "is-object-like-x": "^2.0.25",
-    "is-safe-integer-x": "^2.0.24",
+    "array-for-each-x": "^3.0.20",
+    "collections-x": "^3.0.13",
+    "is-array-like-x": "^2.0.18",
+    "is-object-like-x": "^2.0.26",
+    "is-safe-integer-x": "^2.0.25",
     "is-symbol": "^1.0.2",
     "is-var-name": "^2.0.0",
     "json3": "^3.3.3",
-    "object-create-x": "^3.0.12",
-    "object-define-properties-x": "^5.0.13",
-    "object-define-property-x": "^5.0.16",
-    "object-keys-x": "^3.0.17",
-    "to-string-x": "^2.0.34"
+    "object-create-x": "^3.0.13",
+    "object-define-properties-x": "^5.0.14",
+    "object-define-property-x": "^5.0.17",
+    "object-keys-x": "^3.0.18",
+    "to-string-x": "^2.0.35"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -73,7 +73,7 @@
     "@babel/runtime": "^7.5.5",
     "@types/jest": "^24.0.16",
     "@types/node": "^12.6.8",
-    "@xotic750/eslint-config-recommended": "^1.0.4",
+    "@xotic750/eslint-config-recommended": "^1.0.5",
     "babel-core": "^7.0.0-0",
     "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",
