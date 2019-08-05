@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "array-for-each-x": "^3.0.20",
-    "collections-x": "^3.0.13",
+    "collections-x": "^3.0.14",
     "is-array-like-x": "^2.0.18",
     "is-object-like-x": "^2.0.26",
     "is-safe-integer-x": "^2.0.25",
