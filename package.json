@@ -1,6 +1,6 @@
 {
   "name": "enumify-x",
-  "version": "2.0.24",
+  "version": "2.0.25",
   "description": "Enumerated type library.",
   "homepage": "https://github.com/Xotic750/enumify-x.git",
   "author": {
@@ -49,18 +49,18 @@
     "url": "https://github.com/Xotic750/enumify-x/issues"
   },
   "dependencies": {
-    "array-for-each-x": "^3.0.20",
-    "collections-x": "^3.0.15",
+    "array-for-each-x": "^3.0.21",
+    "collections-x": "^3.0.16",
     "is-array-like-x": "^2.0.19",
     "is-object-like-x": "^2.0.26",
     "is-safe-integer-x": "^2.0.26",
     "is-symbol": "^1.0.2",
     "is-var-name": "^2.0.0",
     "json3": "^3.3.3",
-    "object-create-x": "^3.0.13",
-    "object-define-properties-x": "^5.0.14",
+    "object-create-x": "^3.0.14",
+    "object-define-properties-x": "^5.0.15",
     "object-define-property-x": "^5.0.17",
-    "object-keys-x": "^3.0.18",
+    "object-keys-x": "^3.0.19",
     "to-string-x": "^2.0.35"
   },
   "devDependencies": {
