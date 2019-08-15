@@ -11,24 +11,9 @@ import defineProperties from 'object-define-properties-x';
 import defineProperty from 'object-define-property-x';
 import objectKeys from 'object-keys-x';
 import toStr from 'to-string-x';
+import objectFreeze from 'object-freeze-x';
 
 const {push, join, shift} = [];
-const nativeFreeze = {}.constructor.freeze;
-const hasFreeze = typeof nativeFreeze === 'function';
-
-/**
- * The freeze() method freezes an object. A frozen object can no longer be changed; freezing an object prevents new properties
- * from being added to it, existing properties from being removed, prevents changing the enumerability, configurability,
- * or writability of existing properties, and prevents the values of existing properties from being changed. In addition,
- * freezing an object also prevents its prototype from being changed. Freeze() returns the same object that was passed in.
- *
- * @param {*} value - The object to freeze.
- * @returns {*} - The object that was passed to the function.
- */
-const objectFreeze = function freeze(value) {
-  return hasFreeze ? nativeFreeze(value) : value;
-};
-
 /** @type {Set<string>} */
 const reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'value', 'valueOf']);
 

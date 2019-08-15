@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-08-14T19:57:46.289Z",
+  "date": "2019-08-15T21:05:29.096Z",
   "describe": "",
   "description": "Enumerated type library.",
   "file": "enumify-x.js",
-  "hash": "622fdff04e53262481fd",
+  "hash": "93b0086fab50a71c4932",
   "license": "MIT",
   "version": "2.1.0"
 }
@@ -149,7 +149,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 15);
+/******/ 	return __webpack_require__(__webpack_require__.s = 17);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -182,7 +182,7 @@ module.exports = function isPrimitive(val) {
 
 
 var toStr = Object.prototype.toString;
-var hasSymbols = __webpack_require__(10)();
+var hasSymbols = __webpack_require__(11)();
 
 if (hasSymbols) {
 	var symToStr = Symbol.prototype.toString;
@@ -369,7 +369,7 @@ var slice = Array.prototype.slice;
 var isArgs = __webpack_require__(5);
 
 var origKeys = Object.keys;
-var keysShim = origKeys ? function keys(o) { return origKeys(o); } : __webpack_require__(12);
+var keysShim = origKeys ? function keys(o) { return origKeys(o); } : __webpack_require__(13);
 
 var originalKeys = Object.keys;
 
@@ -433,7 +433,7 @@ module.exports = function isBoolean(value) {
 ;(function () {
   // Detect the `define` function exposed by asynchronous module loaders. The
   // strict `define` check is necessary for compatibility with `r.js`.
-  var isLoader =  true && __webpack_require__(14);
+  var isLoader =  true && __webpack_require__(15);
 
   // A set of types used to distinguish objects from primitives.
   var objectTypes = {
@@ -1369,7 +1369,7 @@ module.exports = function isBoolean(value) {
   }
 }).call(this);
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(13)(module), __webpack_require__(4)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(14)(module), __webpack_require__(4)))
 
 /***/ }),
 /* 10 */
@@ -1378,8 +1378,76 @@ module.exports = function isBoolean(value) {
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
+var forEach = __webpack_require__(16);
+
+var toStr = Object.prototype.toString;
+var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
+
+var typedArrays = [
+	'Float32Array',
+	'Float64Array',
+	'Int8Array',
+	'Int16Array',
+	'Int32Array',
+	'Uint8Array',
+	'Uint8ClampedArray',
+	'Uint16Array',
+	'Uint32Array',
+	'BigInt64Array',
+	'BigUint64Array'
+];
+
+var slice = String.prototype.slice;
+var toStrTags = {};
+var gOPD = Object.getOwnPropertyDescriptor;
+if (hasToStringTag && gOPD && Object.getPrototypeOf) {
+	forEach(typedArrays, function (typedArray) {
+		if (typeof global[typedArray] === 'function') {
+			var arr = new global[typedArray]();
+			if (!(Symbol.toStringTag in arr)) {
+				throw new EvalError('this engine has support for Symbol.toStringTag, but ' + typedArray + ' does not have the property! Please report this.');
+			}
+			var proto = Object.getPrototypeOf(arr);
+			var descriptor = gOPD(proto, Symbol.toStringTag);
+			if (!descriptor) {
+				var superProto = Object.getPrototypeOf(proto);
+				descriptor = gOPD(superProto, Symbol.toStringTag);
+			}
+			toStrTags[typedArray] = descriptor.get;
+		}
+	});
+}
+
+var tryTypedArrays = function tryAllTypedArrays(value) {
+	var anyTrue = false;
+	forEach(toStrTags, function (getter, typedArray) {
+		if (!anyTrue) {
+			try {
+				anyTrue = getter.call(value) === typedArray;
+			} catch (e) { /**/ }
+		}
+	});
+	return anyTrue;
+};
+
+module.exports = function isTypedArray(value) {
+	if (!value || typeof value !== 'object') { return false; }
+	if (!hasToStringTag) { return typedArrays.indexOf(slice.call(toStr.call(value), 8, -1)) > -1; }
+	if (!gOPD) { return false; }
+	return tryTypedArrays(value);
+};
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(4)))
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {
+
 var origSymbol = global.Symbol;
-var hasSymbolSham = __webpack_require__(11);
+var hasSymbolSham = __webpack_require__(12);
 
 module.exports = function hasNativeSymbols() {
 	if (typeof origSymbol !== 'function') { return false; }
@@ -1393,7 +1461,7 @@ module.exports = function hasNativeSymbols() {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(4)))
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1442,7 +1510,7 @@ module.exports = function hasSymbols() {
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1571,7 +1639,7 @@ module.exports = keysShim;
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -1599,7 +1667,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {/* globals __webpack_amd_options__ */
@@ -1608,7 +1676,35 @@ module.exports = __webpack_amd_options__;
 /* WEBPACK VAR INJECTION */}.call(this, {}))
 
 /***/ }),
-/* 15 */
+/* 16 */
+/***/ (function(module, exports) {
+
+
+var hasOwn = Object.prototype.hasOwnProperty;
+var toString = Object.prototype.toString;
+
+module.exports = function forEach (obj, fn, ctx) {
+    if (toString.call(fn) !== '[object Function]') {
+        throw new TypeError('iterator must be a function');
+    }
+    var l = obj.length;
+    if (l === +l) {
+        for (var i = 0; i < l; i++) {
+            fn.call(ctx, obj[i], i, obj);
+        }
+    } else {
+        for (var k in obj) {
+            if (hasOwn.call(obj, k)) {
+                fn.call(ctx, obj[k], k, obj);
+            }
+        }
+    }
+};
+
+
+
+/***/ }),
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -7060,6 +7156,46 @@ var collections_x_esm_isSet = SetConstructor === SetImplementation ? collections
 // EXTERNAL MODULE: ./node_modules/json3/lib/json3.js
 var json3 = __webpack_require__(9);
 
+// EXTERNAL MODULE: ./node_modules/is-typed-array/index.js
+var is_typed_array = __webpack_require__(10);
+var is_typed_array_default = /*#__PURE__*/__webpack_require__.n(is_typed_array);
+
+// CONCATENATED MODULE: ./node_modules/object-freeze-x/dist/object-freeze-x.esm.js
+
+
+var nativeFreeze = {}.constructor.freeze;
+
+var object_freeze_x_esm_assertTypedArray = function assertTypedArray(obj) {
+  if (is_typed_array_default()(obj) && obj.byteLength !== 0) {
+    throw new TypeError('Cannot freeze array buffer views with elements');
+  }
+
+  return obj;
+};
+
+var patchedFreeze = function freeze(obj) {
+  return is_primitive_default()(obj) ? obj : nativeFreeze(object_freeze_x_esm_assertTypedArray(obj));
+}; // fake
+
+var object_freeze_x_esm_implementation = function freeze(obj) {
+  return object_freeze_x_esm_assertTypedArray(obj);
+};
+/**
+ * This method method freezes an object. A frozen object can no longer be changed; freezing an
+ * object prevents new properties from being added to it, existing properties from being removed,
+ * prevents changing the enumerability, configurability, or writability of existing properties,
+ * and prevents the values of existing properties from being changed. In addition, freezing an
+ * object also prevents its prototype from being changed. It returns the same object that
+ * was passed in.
+ *
+ * @param {*} obj - The object to freeze.
+ * @returns {*} The object that was passed to the function..
+ */
+
+var object_freeze_x_esm_freeze = typeof nativeFreeze === 'function' ? patchedFreeze : object_freeze_x_esm_implementation;
+/* harmony default export */ var object_freeze_x_esm = (object_freeze_x_esm_freeze);
+
+
 // CONCATENATED MODULE: ./dist/enumify-x.esm.js
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Enum; });
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
@@ -7083,27 +7219,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 
 
+
 var enumify_x_esm_ref = [],
     enumify_x_esm_push = enumify_x_esm_ref.push,
     join = enumify_x_esm_ref.join,
     shift = enumify_x_esm_ref.shift;
-var nativeFreeze = {}.constructor.freeze;
-var hasFreeze = typeof nativeFreeze === 'function';
-/**
- * The freeze() method freezes an object. A frozen object can no longer be changed; freezing an object prevents new properties
- * from being added to it, existing properties from being removed, prevents changing the enumerability, configurability,
- * or writability of existing properties, and prevents the values of existing properties from being changed. In addition,
- * freezing an object also prevents its prototype from being changed. Freeze() returns the same object that was passed in.
- *
- * @param {*} value - The object to freeze.
- * @returns {*} - The object that was passed to the function.
- */
-
-var objectFreeze = function freeze(value) {
-  return hasFreeze ? nativeFreeze(value) : value;
-};
 /** @type {Set<string>} */
-
 
 var reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'value', 'valueOf']);
 
@@ -7142,7 +7263,7 @@ function Enum(name, value) {
         value: value
       }
     });
-    objectFreeze(this);
+    object_freeze_x_esm(this);
   }
 }
 object_define_properties_x_esm(Enum.prototype, {
@@ -7468,7 +7589,7 @@ object_define_properties_x_esm(Enum, {
         properties: properties,
         opts: opts
       });
-      return objectFreeze(constructionProps.CstmCtr);
+      return object_freeze_x_esm(constructionProps.CstmCtr);
     }
   }
 });
