@@ -12,8 +12,14 @@ import defineProperty from 'object-define-property-x';
 import objectKeys from 'object-keys-x';
 import toStr from 'to-string-x';
 import objectFreeze from 'object-freeze-x';
+import methodize from 'simple-methodize-x';
+import call from 'simple-call-x';
+import slice from 'array-slice-x';
 
-const {push, join, shift} = [];
+const tempArray = [];
+const push = methodize(tempArray.push);
+const join = methodize(tempArray.join);
+const shift = methodize(tempArray.shift);
 /** @type {Set<string>} */
 const reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'value', 'valueOf']);
 
@@ -200,10 +206,10 @@ const initialise = function initialise(obj) {
 const calcString = function calcString(ctrName, names) {
   const strArr = [];
   names.forEach(function iteratee(enumMember) {
-    push.call(strArr, stringify(enumMember.name));
+    push(strArr, stringify(enumMember.name));
   });
 
-  return `${ctrName} { ${join.call(strArr, ', ')} }`;
+  return `${ctrName} { ${join(strArr, ', ')} }`;
 };
 
 const definePrototype = function definePrototype(constructionProps) {
@@ -284,7 +290,7 @@ const defineCstmCtr = function defineCstmCtr(constructionProps) {
     forEach: {
       value: function forEach(callback, thisArg) {
         constructionProps.data.keys.forEach(function iteratee(key) {
-          callback.call(thisArg, constructionProps.data.names.get(key));
+          call(callback, thisArg, [constructionProps.data.names.get(key)]);
         });
       },
     },
@@ -293,7 +299,7 @@ const defineCstmCtr = function defineCstmCtr(constructionProps) {
       value: function toJSON() {
         const value = [];
         constructionProps.data.names.forEach(function iteratee(enumMember) {
-          push.call(value, enumMember.toJSON());
+          push(value, enumMember.toJSON());
         });
 
         return value;
@@ -314,17 +320,17 @@ const defineCstmCtr = function defineCstmCtr(constructionProps) {
 
 const getConstruct = function getConstruct(constructionProps) {
   return function construct(context, args) {
-    const argsArr = [...args];
+    const argsArr = slice(args);
 
     if (constructionProps.data) {
       if (isObjectLike(context) && context instanceof constructionProps.CstmCtr) {
         throw new SyntaxError('Enum classes can’t be instantiated');
       }
 
-      return constructionProps.data.names.get(constructionProps.data.values.get(shift.call(argsArr)));
+      return constructionProps.data.names.get(constructionProps.data.values.get(shift(argsArr)));
     }
 
-    Enum.apply(context, argsArr);
+    call(Enum, context, argsArr);
 
     return context;
   };

@@ -1,11 +1,3 @@
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 import arrayForEach from 'array-for-each-x';
 import { MapConstructor, SetConstructor } from 'collections-x';
 import isArrayLike from 'is-array-like-x';
@@ -20,10 +12,13 @@ import defineProperty from 'object-define-property-x';
 import objectKeys from 'object-keys-x';
 import toStr from 'to-string-x';
 import objectFreeze from 'object-freeze-x';
-var _ref = [],
-    push = _ref.push,
-    join = _ref.join,
-    shift = _ref.shift;
+import methodize from 'simple-methodize-x';
+import call from 'simple-call-x';
+import slice from 'array-slice-x';
+var tempArray = [];
+var push = methodize(tempArray.push);
+var join = methodize(tempArray.join);
+var shift = methodize(tempArray.shift);
 /** @type {Set<string>} */
 
 var reserved = new SetConstructor(['forEach', 'name', 'toJSON', 'toString', 'value', 'valueOf']);
@@ -220,9 +215,9 @@ var initialise = function initialise(obj) {
 var calcString = function calcString(ctrName, names) {
   var strArr = [];
   names.forEach(function iteratee(enumMember) {
-    push.call(strArr, stringify(enumMember.name));
+    push(strArr, stringify(enumMember.name));
   });
-  return "".concat(ctrName, " { ").concat(join.call(strArr, ', '), " }");
+  return "".concat(ctrName, " { ").concat(join(strArr, ', '), " }");
 };
 
 var definePrototype = function definePrototype(constructionProps) {
@@ -307,7 +302,7 @@ var defineCstmCtr = function defineCstmCtr(constructionProps) {
     forEach: {
       value: function forEach(callback, thisArg) {
         constructionProps.data.keys.forEach(function iteratee(key) {
-          callback.call(thisArg, constructionProps.data.names.get(key));
+          call(callback, thisArg, [constructionProps.data.names.get(key)]);
         });
       }
     },
@@ -315,7 +310,7 @@ var defineCstmCtr = function defineCstmCtr(constructionProps) {
       value: function toJSON() {
         var value = [];
         constructionProps.data.names.forEach(function iteratee(enumMember) {
-          push.call(value, enumMember.toJSON());
+          push(value, enumMember.toJSON());
         });
         return value;
       }
@@ -334,17 +329,17 @@ var defineCstmCtr = function defineCstmCtr(constructionProps) {
 
 var getConstruct = function getConstruct(constructionProps) {
   return function construct(context, args) {
-    var argsArr = _toConsumableArray(args);
+    var argsArr = slice(args);
 
     if (constructionProps.data) {
       if (isObjectLike(context) && context instanceof constructionProps.CstmCtr) {
         throw new SyntaxError('Enum classes can’t be instantiated');
       }
 
-      return constructionProps.data.names.get(constructionProps.data.values.get(shift.call(argsArr)));
+      return constructionProps.data.names.get(constructionProps.data.values.get(shift(argsArr)));
     }
 
-    Enum.apply(context, argsArr);
+    call(Enum, context, argsArr);
     return context;
   };
 };
