@@ -1,6 +1,6 @@
 {
   "name": "enumify-x",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Enumerated type library.",
   "homepage": "https://github.com/Xotic750/enumify-x.git",
   "author": {
@@ -50,22 +50,22 @@
     "url": "https://github.com/Xotic750/enumify-x/issues"
   },
   "dependencies": {
-    "array-for-each-x": "^3.1.0",
-    "array-slice-x": "^4.2.0",
-    "collections-x": "^3.1.0",
-    "is-array-like-x": "^2.1.0",
-    "is-object-like-x": "^2.1.0",
-    "is-safe-integer-x": "^2.2.0",
+    "array-for-each-x": "^3.1.1",
+    "array-slice-x": "^4.2.1",
+    "collections-x": "^3.1.1",
+    "is-array-like-x": "^2.1.1",
+    "is-object-like-x": "^2.1.1",
+    "is-safe-integer-x": "^2.2.1",
     "is-symbol": "^1.0.2",
     "is-var-name": "^2.0.0",
     "json3": "^3.3.3",
-    "object-create-x": "^3.1.0",
-    "object-define-properties-x": "^5.1.0",
-    "object-define-property-x": "^5.1.0",
-    "object-freeze-x": "^1.0.0",
-    "object-keys-x": "^3.1.0",
-    "simple-call-x": "^1.0.1",
-    "simple-methodize-x": "^1.0.2",
+    "object-create-x": "^3.1.1",
+    "object-define-properties-x": "^5.1.1",
+    "object-define-property-x": "^5.1.1",
+    "object-freeze-x": "^1.0.2",
+    "object-keys-x": "^3.1.1",
+    "simple-call-x": "^1.0.2",
+    "simple-methodize-x": "^1.0.3",
     "to-string-x": "^2.1.0"
   },
   "devDependencies": {
