@@ -2,13 +2,13 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-08-28T16:18:43.036Z",
+  "date": "2019-08-28T18:26:22.965Z",
   "describe": "",
   "description": "Enumerated type library.",
   "file": "enumify-x.js",
   "hash": "7ee1f94a3de756845095",
   "license": "MIT",
-  "version": "2.1.1"
+  "version": "2.1.2"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
