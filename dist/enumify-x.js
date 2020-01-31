@@ -2,7 +2,7 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017-present",
-  "date": "2019-09-05T20:55:20.342Z",
+  "date": "2020-01-31T12:07:17.099Z",
   "describe": "",
   "description": "Enumerated type library.",
   "file": "enumify-x.js",

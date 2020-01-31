@@ -201,8 +201,14 @@ methods.forEach(({method, description}) => {
       const opts = {unique: true};
       const properties = [
         subjectProps,
-        [{name: 'a', value: NaN}, {name: 'b', value: NaN}],
-        [{name: 'a', value: 0}, {name: 'b', value: -0}],
+        [
+          {name: 'a', value: NaN},
+          {name: 'b', value: NaN},
+        ],
+        [
+          {name: 'a', value: 0},
+          {name: 'b', value: -0},
+        ],
       ];
 
       properties.forEach((props) => {
